@@ -9,10 +9,3 @@ steps:
   - run:
       name: "Fetch the Shipyard environment variables"
       command: <<include(scripts/get-shipyard-environment.sh)>>
-  - run:
-      name: "Echo environment to command line"
-      command: |
-        # Get the environment URL and bypass token
-
-        echo ${SHIPYARD_ENVIRONMENT_URL}
-        echo ${SHIPYARD_BYPASS_TOKEN}
