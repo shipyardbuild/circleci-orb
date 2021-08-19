@@ -1,0 +1,18 @@
+description: >
+  Collects the SHIPYARD_ENVIRONMENT_URL and SHIPYARD_BYPASS_TOKEN for an environment
+
+steps:
+  - jq/install
+  - run:
+      name: "Gracefully exit if this is not a PR branch"
+      command: "[[ -z $CIRCLE_PULL_REQUEST ]] && circleci-agent task halt || echo This job is for: $CIRCLE_PULL_REQUEST"
+  - run:
+      name: "Fetch the Shipyard environment variables"
+      command: <<include(scripts/get-shipyard-environment.sh)>>
+  - run:
+      name: "Echo environment to command line"
+      command: |
+        # Get the environment URL and bypass token
+
+        echo ${SHIPYARD_ENVIRONMENT_URL}
+        echo ${SHIPYARD_BYPASS_TOKEN}
