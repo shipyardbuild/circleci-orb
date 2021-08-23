@@ -1,7 +1,7 @@
 version: 2.1
 
 description: >
-  Simple communication between CircleCI and your Shipyard environments
+  Fetch relevent Shipyard environment variables for use in a CircleCI job.
 
 display:
   home_url: "https://shipyard.build/"
