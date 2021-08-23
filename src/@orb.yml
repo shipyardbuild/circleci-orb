@@ -5,6 +5,7 @@ description: >
 
 display:
   home_url: "https://shipyard.build/"
+  source_url: "https://github.com/shipyardbuild/circleci-orb"
 
 orbs:
   jq: circleci/jq@2.2.0
