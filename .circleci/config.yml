@@ -68,7 +68,7 @@ workflows:
       # e.g. [semver:patch] will cause a patch version to be published.
       - orb-tools/dev-promote-prod-from-commit-subject:
           orb-name: shipyard/shipyard
-          context: orb-publishing
+          context: org-publish
           add-pr-comment: false
           fail-if-semver-not-indicated: true
           publish-version-tag: false
