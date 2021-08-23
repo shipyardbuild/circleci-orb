@@ -1,13 +1,25 @@
 description: >
-  Sample example description.
+  Collect the bypass token and URL for this ephemeral environment attached to this PR, then run e2e tests on that environment.
+  Make sure that your SHIPYARD_API_TOKEN is included as an environment variable.
 # Provide a use-case based example for using this orb.
 # Everything in the `usage` section will be displayed in the orb registry.
 # Comments are not retained.
 usage:
   version: 2.1
   orbs:
-    <orb-name>: <namespace>/<orb-name>@1.2.3
+    shipyard: shipyard/shipyard@1.0.0
+  jobs:
+    ephemeral-e2e-tests:
+      executor:
+        name: cypress/browsers-chrome77
+      steps:
+        - checkout
+        - shipyard/fetch-shipyard-env
+        - run:
+            name: "Run the e2e tests on the ephemeral environment"
+            command: |
+              CYPRESS_BASE_URL=${SHIPYARD_ENVIRONMENT_URL} CYPRESS_BYPASS_TOKEN=${SHIPYARD_BYPASS_TOKEN} npm run test
   workflows:
     use-my-orb:
       jobs:
-        - <orb-name>/<job-name>
+        - ephemeral-e2e-tests
