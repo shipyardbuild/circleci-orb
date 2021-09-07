@@ -1,7 +1,7 @@
 version: 2.1
 
 description: >
-  Use Shipyard with CircleCI to run CircleCI jobs on Staging Environments automatically deployed by Shipyard, authenticating into them via a bypass token instead of oauth.
+  Use Shipyard with CircleCI to run CircleCI jobs on Staging Environments automatically deployed by Shipyard.
 
 display:
   home_url: "https://shipyard.build/"
