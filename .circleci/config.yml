@@ -39,7 +39,7 @@ workflows:
       # Publish development version(s) of the orb.
       - orb-tools/publish-dev:
           orb-name: shipyard/shipyard
-          context: orb-publishing # A restricted context containing your private publishing credentials. Will only execute if approved by an authorized user.
+          context: org-publish # A restricted context containing your private publishing credentials. Will only execute if approved by an authorized user.
           requires:
             - orb-tools/lint
             - orb-tools/pack
@@ -49,7 +49,7 @@ workflows:
       # dev:${CIRCLE_SHA1:0:7} version of your orb
       - orb-tools/trigger-integration-tests-workflow:
           name: trigger-integration-dev
-          context: orb-publishing
+          context: org-publish
           requires:
             - orb-tools/publish-dev
 
