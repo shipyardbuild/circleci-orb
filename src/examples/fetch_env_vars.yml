@@ -1,6 +1,6 @@
 description: >
-  Collect the bypass token and URL for this ephemeral environment attached to this PR, then run e2e tests on that environment.
-  Make sure that your SHIPYARD_API_TOKEN is included as an environment variable.
+  Collect the bypass token and URL for an authenticated ephemeral environment attached to this PR in order to run e2e tests on it.
+  Please make sure that your SHIPYARD_API_TOKEN is included as an environment variable.
 # Provide a use-case based example for using this orb.
 # Everything in the `usage` section will be displayed in the orb registry.
 # Comments are not retained.
@@ -12,6 +12,10 @@ usage:
     ephemeral-e2e-tests:
       executor:
         name: cypress/browsers-chrome77
+      parameters:
+        api-token:
+          type: env_var_name
+          default: SHIPYARD_API_TOKEN
       steps:
         - checkout
         - shipyard/fetch-shipyard-env
