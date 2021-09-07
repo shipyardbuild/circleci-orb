@@ -1,7 +1,7 @@
 version: 2.1
 
 description: >
-  Fetch relevent Shipyard environment variables for use in a CircleCI job.
+  Use Shipyard with CircleCI to run CircleCI jobs on Staging Environments automatically deployed by Shipyard, authenticating into them via a bypass token instead of oauth.
 
 display:
   home_url: "https://shipyard.build/"
