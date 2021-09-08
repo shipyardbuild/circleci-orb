@@ -4,6 +4,7 @@ description: >
 parameters:
   api-token:
     type: env_var_name
+    default: SHIPYARD_API_TOKEN
     description: "Shipyard API token used to fetch necessary environment variables from Shipyard."
 
 steps:
