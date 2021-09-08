@@ -3,8 +3,8 @@ description: >
 
 parameters:
   api-token:
-    type: SHIPYARD_API_TOKEN
-    description: "API token used to fetch necessary environment variables from Shipyard."
+    type: env_var_name
+    description: "Shipyard API token used to fetch necessary environment variables from Shipyard."
 
 steps:
   - jq/install
