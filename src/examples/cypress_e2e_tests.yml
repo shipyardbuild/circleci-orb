@@ -12,10 +12,6 @@ usage:
     ephemeral-e2e-tests:
       executor:
         name: cypress/browsers-chrome77
-      parameters:
-        api-token:
-          type: env_var_name
-          default: SHIPYARD_API_TOKEN
       steps:
         - checkout
         - shipyard/fetch-shipyard-env

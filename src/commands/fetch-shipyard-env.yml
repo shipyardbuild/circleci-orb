@@ -1,6 +1,11 @@
 description: >
   Collects the SHIPYARD_ENVIRONMENT_URL and SHIPYARD_BYPASS_TOKEN for an environment
 
+parameters:
+  api-token:
+    type: SHIPYARD_API_TOKEN
+    description: "API token used to fetch necessary environment variables from Shipyard."
+
 steps:
   - jq/install
   - run:
