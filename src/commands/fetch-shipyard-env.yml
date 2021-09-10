@@ -4,7 +4,7 @@ description: >
 parameters:
   api-token:
     type: env_var_name
-    default: SHIPYARD_API_TOKEN
+    default: "SHIPYARD_API_TOKEN"
     description: "Shipyard API token used to fetch necessary environment variables from Shipyard."
 
 steps:
@@ -14,4 +14,6 @@ steps:
       command: "[[ -z $CIRCLE_PULL_REQUEST ]] && circleci-agent task halt || echo This job is for: $CIRCLE_PULL_REQUEST"
   - run:
       name: "Fetch the Shipyard environment variables"
+      environment:
+          PARAM_SHIPYARD_TOKEN: <<parameters.api-token>>
       command: <<include(scripts/get-shipyard-environment.sh)>>
