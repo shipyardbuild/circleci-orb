@@ -7,9 +7,8 @@ REPO="${CIRCLE_PROJECT_REPONAME}"
 BRANCH="${CIRCLE_BRANCH}"
 
 # Get auth token
-export SHIPYARD_API_TOKEN=${!PARAM_SHIPYARD_TOKEN}
+SHIPYARD_API_TOKEN=${!PARAM_SHIPYARD_TOKEN}
 [ -z "$SHIPYARD_API_TOKEN" ] && echo "A Shipyard API token must be supplied. Check the \"api-token\" parameter." && exit 1
-echo "export SHIPYARD_API_TOKEN=\"${SHIPYARD_API_TOKEN}\"" >> "$BASH_ENV"
 
 # Hit the Shipyard API
 URL="https://shipyard.build/api/v1/project?org_name=${ORG}&repo_name=${REPO}&branch=${BRANCH}"
