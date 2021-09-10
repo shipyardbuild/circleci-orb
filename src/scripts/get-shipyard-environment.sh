@@ -21,6 +21,14 @@ then
   exit 1
 fi
 
+# Ensure there are no other errors
+if [ "$(echo "${JSON}" | jq -r '.errors[0]')" != null ]
+then
+  ERROR=$(echo "${JSON}" | jq -r '.errors[0].title')
+  echo "ERROR: ${ERROR}."
+  exit 1
+fi
+
 SHIPYARD_BYPASS_TOKEN=$(echo "${JSON}" | jq -r '.data[0].attributes.bypass_token')
 SHIPYARD_ENVIRONMENT_URL=$(echo "${JSON}" | jq -r '.data[0].attributes.url')
 SHIPYARD_ENVIRONMENT_READY=$(echo "${JSON}" | jq -r '.data[0].attributes.ready')
