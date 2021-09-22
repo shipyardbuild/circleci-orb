@@ -55,7 +55,7 @@ fi
 # Wait for the environment to be ready
 while [[ "${SHIPYARD_ENVIRONMENT_READY}" != true ]]; do
   echo "Waiting for your Shipyard environment..."
-  sleep 3
+  sleep 15
 
   # Re-fetch the data
   JSON=$(curl -s "${URL}" -H "x-api-token: ${SHIPYARD_API_TOKEN}")
