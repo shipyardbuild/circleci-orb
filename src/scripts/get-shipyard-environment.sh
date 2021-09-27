@@ -32,6 +32,7 @@ fi
 SHIPYARD_BYPASS_TOKEN=$(echo "${JSON}" | jq -r '.data[0].attributes.bypass_token')
 SHIPYARD_ENVIRONMENT_URL=$(echo "${JSON}" | jq -r '.data[0].attributes.url')
 SHIPYARD_ENVIRONMENT_READY=$(echo "${JSON}" | jq -r '.data[0].attributes.ready')
+SHIPYARD_ENVIRONMENT_STOPPED=$(echo "${JSON}" | jq -r '.data[0].attributes.stopped')
 
 # Validate the response data
 if [ -z "${SHIPYARD_BYPASS_TOKEN}" ]; then
@@ -54,6 +55,11 @@ fi
 
 # Wait for the environment to be ready
 while [[ "${SHIPYARD_ENVIRONMENT_READY}" != true ]]; do
+  if [[ "${SHIPYARD_ENVIRONMENT_STOPPED}" == true ]]; then
+    echo "${JSON}"
+    echo "ERROR: environment is stopped!"
+    exit 1
+  fi
   echo "Waiting for your Shipyard environment..."
   sleep 15
 
@@ -62,6 +68,7 @@ while [[ "${SHIPYARD_ENVIRONMENT_READY}" != true ]]; do
   SHIPYARD_BYPASS_TOKEN=$(echo "${JSON}" | jq -r '.data[0].attributes.bypass_token')
   SHIPYARD_ENVIRONMENT_URL=$(echo "${JSON}" | jq -r '.data[0].attributes.url')
   SHIPYARD_ENVIRONMENT_READY=$(echo "${JSON}" | jq -r '.data[0].attributes.ready')
+  SHIPYARD_ENVIRONMENT_STOPPED=$(echo "${JSON}" | jq -r '.data[0].attributes.stopped')
 done
 
 { echo "export SHIPYARD_BYPASS_TOKEN=${SHIPYARD_BYPASS_TOKEN}"; echo "export SHIPYARD_ENVIRONMENT_URL=${SHIPYARD_ENVIRONMENT_URL}"; echo "export SHIPYARD_ENVIRONMENT_READY=${SHIPYARD_ENVIRONMENT_READY}"; } >> "${BASH_ENV}"
