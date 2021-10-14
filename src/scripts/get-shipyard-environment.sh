@@ -1,5 +1,6 @@
 #!/bin/bash
-# Get the Shipyard environment URL and bypass token for this project
+# Get the Shipyard environment URL and bypass token for this project. 
+# NOTE: does not currently work for applications.
 
 URL=""
 ORG="${CIRCLE_PROJECT_USERNAME}"
