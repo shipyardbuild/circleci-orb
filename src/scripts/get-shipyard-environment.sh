@@ -1,7 +1,7 @@
 #!/bin/bash
 # Get the Shipyard environment URL and bypass token for an environment.
 
-ORB_VERSION=3.0.0
+ORB_VERSION=3.1.0
 USER_AGENT="CircleCI (shipyard/shipyard:${ORB_VERSION})"
 URL="${SHIPYARD_BASE_URL:-https://shipyard.build}"
 ORG="${CIRCLE_PROJECT_USERNAME}"
