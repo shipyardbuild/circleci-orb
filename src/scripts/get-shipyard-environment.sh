@@ -1,8 +1,9 @@
 #!/bin/bash
-# Get the Shipyard environment URL and bypass token for this project. 
-# NOTE: does not currently work for applications.
+# Get the Shipyard environment URL and bypass token for an environment.
 
-URL=""
+ORB_VERSION=3.1.0
+USER_AGENT="CircleCI (shipyard/shipyard:${ORB_VERSION})"
+URL="${SHIPYARD_BASE_URL:-https://shipyard.build}"
 ORG="${CIRCLE_PROJECT_USERNAME}"
 REPO="${CIRCLE_PROJECT_REPONAME}"
 BRANCH="${CIRCLE_BRANCH}"
@@ -12,8 +13,8 @@ SHIPYARD_API_TOKEN=${!PARAM_SHIPYARD_TOKEN}
 [ -z "$SHIPYARD_API_TOKEN" ] && echo "A Shipyard API token must be supplied. Check the \"api-token\" parameter." && exit 1
 
 # Hit the Shipyard API
-URL="https://shipyard.build/api/v1/project?org_name=${ORG}&repo_name=${REPO}&branch=${BRANCH}"
-JSON=$(curl -s "${URL}" -H "x-api-token: ${SHIPYARD_API_TOKEN}")
+URL="${URL}/api/v1/environment?org_name=${ORG}&repo_name=${REPO}&branch=${BRANCH}"
+JSON=$(curl -s "${URL}" -H "x-api-token: ${SHIPYARD_API_TOKEN}" -H "User-Agent: ${USER_AGENT}")
 
 # Ensure we got a response
 if [ -z "${JSON}" ]
@@ -65,7 +66,7 @@ while [[ "${SHIPYARD_ENVIRONMENT_READY}" != true ]]; do
   sleep 15
 
   # Re-fetch the data
-  JSON=$(curl -s "${URL}" -H "x-api-token: ${SHIPYARD_API_TOKEN}")
+  JSON=$(curl -s "${URL}" -H "x-api-token: ${SHIPYARD_API_TOKEN}" -H "User-Agent: ${USER_AGENT}")
   SHIPYARD_BYPASS_TOKEN=$(echo "${JSON}" | jq -r '.data[0].attributes.bypass_token')
   SHIPYARD_ENVIRONMENT_URL=$(echo "${JSON}" | jq -r '.data[0].attributes.url')
   SHIPYARD_ENVIRONMENT_READY=$(echo "${JSON}" | jq -r '.data[0].attributes.ready')
