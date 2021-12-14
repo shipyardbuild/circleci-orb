@@ -12,6 +12,7 @@ then put it's data in the environment.
 - CIRCLE_PROJECT_BRANCH
 - SHIPYARD_API_TOKEN
 """
+from __future__ import print_function
 
 import os
 import sys
@@ -21,8 +22,14 @@ import swagger_client
 from swagger_client.rest import ApiException
 
 
+def exit(msg):
+    print(msg)
+    sys.exit(1)
+
+
 # Make sure there's a bash env file in the environment
-if not (bash_env_path := os.environ.get('BASH_ENV')):
+bash_env_path = os.environ.get('BASH_ENV')
+if not bash_env_path:
     exit('ERROR: missing BASH_ENV environment variable')
 
 # Constants
@@ -31,20 +38,15 @@ repo = os.environ.get("CIRCLE_PROJECT_REPONAME")
 branch = os.environ.get("CIRCLE_BRANCH")
 
 # Get auth token
-if not (api_token := os.environ.get('SHIPYARD_API_TOKEN')):
-    print('No SHIPYARD_API_TOKEN provided, exiting.')
-    sys.exit(1)
+api_token = os.environ.get('SHIPYARD_API_TOKEN')
+if not api_token:
+    exit('No SHIPYARD_API_TOKEN provided, exiting.')
 
 # Prepare API client
 configuration = swagger_client.Configuration()
 configuration.api_key['x-api-token'] = api_token
 client = swagger_client.ApiClient(configuration)
 api_instance = swagger_client.EnvironmentApi(client)
-
-
-def exit(msg):
-    print(msg)
-    sys.exit(1)
 
 
 def fetch_shipyard_environment():
@@ -56,11 +58,12 @@ def fetch_shipyard_environment():
                                                   repo_name=repo,
                                                   branch=branch).to_dict()
     except ApiException as e:
-        exit(f"ERROR: issue while listing environments via API: {e}")
+        exit("ERROR: issue while listing environments via API: {}".format(e))
 
     # Exit if any errors
-    if errors := response.get('errors'):
-        exit(f'ERROR: {errors[0]["title"]}')
+    errors = response.get('errors')
+    if errors:
+        exit('ERROR: {}'.format(errors[0]["title"]))
 
     # Verify an environment was found
     if not len(response['data']):
@@ -76,7 +79,7 @@ def fetch_shipyard_environment():
     # Verify all the needed fields are available
     for param in ('bypass_token', 'url', 'ready', 'stopped', 'retired'):
         if param not in environment_data:
-            exit(f'ERROR: no {param} found!')
+            exit('ERROR: no {} found!'.format(param))
 
     return environment_id, environment_data
 
@@ -87,7 +90,7 @@ def restart_environment(environment_id):
     try:
         api_instance.restart_environment(environment_id)
     except ApiException as e:
-        exit(f"ERROR: issue while restart the environment: {e}", )
+        exit("ERROR: issue while restart the environment: {}".format(e))
 
 
 def wait_for_environment():
@@ -130,12 +133,12 @@ def main():
     # Write the data to the job's environment
     with open(bash_env_path, 'a') as bash_env:
         bash_env.write('\n'.join([
-            f'export SHIPYARD_BYPASS_TOKEN={environment_data["bypass_token"]}',
-            f'export SHIPYARD_ENVIRONMENT_URL={environment_data["url"]}',
-            f'export SHIPYARD_ENVIRONMENT_READY={environment_data["ready"]}',
+            'export SHIPYARD_BYPASS_TOKEN={}'.format(environment_data["bypass_token"]),
+            'export SHIPYARD_ENVIRONMENT_URL={}'.format(environment_data["url"]),
+            'export SHIPYARD_ENVIRONMENT_READY={}'.format(environment_data["ready"]),
         ]))
 
-    print(f'Shipyard environment data written to {bash_env_path}!')
+    print('Shipyard environment data written to {}!'.format(bash_env_path))
 
 
 if __name__ == "__main__":
