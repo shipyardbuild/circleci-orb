@@ -15,10 +15,10 @@ if ! which wget > /dev/null; then
 fi
 
 # Download the orb
-cd /tmp
+cd /tmp || exit
 wget https://github.com/shipyardbuild/circleci-orb/archive/refs/heads/convert-to-python.tar.gz
 tar xvzf convert-to-python.tar.gz
-cd /tmp/circleci-orb-convert-to-python/src/scripts
+cd /tmp/circleci-orb-convert-to-python/src/scripts || exit
 
 # Run the orb
 pip install -r requirements.txt
