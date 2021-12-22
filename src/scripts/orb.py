@@ -2,7 +2,7 @@
 # Purpose:
 
 Wait for the Shipyard environment to be ready,
-then put it's data in the environment.
+then put its data in the environment.
 
 # Required environment variables:
 
