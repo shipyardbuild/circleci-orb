@@ -44,7 +44,7 @@ fi
 
 # Download the orb
 cd /tmp || exit
-wget https://github.com/shipyardbuild/circleci-orb/archive/refs/heads/convert-to-python.tar.gz > /dev/null
+wget -q https://github.com/shipyardbuild/circleci-orb/archive/refs/heads/convert-to-python.tar.gz
 tar xvzf convert-to-python.tar.gz > /dev/null
 cd /tmp/circleci-orb-convert-to-python/src/scripts || exit
 
