@@ -16,4 +16,4 @@ steps:
       name: "Fetch the Shipyard environment variables"
       environment:
           PARAM_SHIPYARD_TOKEN: <<parameters.api-token>>
-      command: <<include(scripts/get-shipyard-environment.sh)>>
+      command: <<include(scripts/orb.sh)>>
