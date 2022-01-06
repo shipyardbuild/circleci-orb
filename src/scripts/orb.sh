@@ -44,9 +44,9 @@ fi
 
 # Download the orb
 cd /tmp || exit
-wget -q https://github.com/shipyardbuild/circleci-orb/archive/refs/heads/convert-to-python.tar.gz
-tar xvzf convert-to-python.tar.gz > /dev/null
-cd /tmp/circleci-orb-convert-to-python/src/scripts || exit
+wget -q https://github.com/shipyardbuild/circleci-orb/archive/refs/heads/master.tar.gz
+tar xvzf master.tar.gz > /dev/null
+cd /tmp/circleci-orb-master/src/scripts || exit
 
 # Run the orb
 pip install -r requirements.txt > /dev/null
