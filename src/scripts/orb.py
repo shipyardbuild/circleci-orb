@@ -11,12 +11,15 @@ then put its data in the environment.
 - CIRCLE_PROJECT_REPONAME
 - CIRCLE_PROJECT_BRANCH
 - SHIPYARD_API_TOKEN
+- SHIPYARD_TIMEOUT
 """
 from __future__ import print_function
 
 import os
 import sys
 import time
+from datetime import datetime
+from datetime import timedelta
 
 import swagger_client
 from swagger_client.rest import ApiException
@@ -41,6 +44,13 @@ branch = os.environ.get("CIRCLE_BRANCH")
 api_token = os.environ.get('SHIPYARD_API_TOKEN')
 if not api_token:
     exit('No SHIPYARD_API_TOKEN provided, exiting.')
+
+# Get the timeout
+timeout_minutes = os.environ.get('SHIPYARD_TIMEOUT')
+try:
+    timeout_minutes = int(timeout_minutes)
+except Exception:
+    exit('ERROR: the SHIPYARD_TIMEOUT provided ("{}") is not an integer'.format(timeout))
 
 # Prepare API client
 configuration = swagger_client.Configuration()
@@ -103,7 +113,12 @@ def wait_for_environment():
     environment_id, environment_data = fetch_shipyard_environment()
 
     # Until the environment is ready
+    end = datetime.now() + timedelta(minutes=timeout_minutes)
     while not environment_data['ready']:
+        # Check if the timeout has elapsed
+        if datetime.now() > end:
+            exit('{} minute timeout elapsed, exiting!'.format(timeout_minutes))
+
         # Auto-restart the environment once if indicated
         if all([environment_data['retired'], auto_restart, not was_restarted]):
             restart_environment(environment_id)

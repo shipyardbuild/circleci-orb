@@ -6,6 +6,10 @@ parameters:
     type: env_var_name
     default: "SHIPYARD_API_TOKEN"
     description: "Shipyard API token used to fetch necessary environment variables from Shipyard."
+  timeout-minutes:
+    type: string
+    default: "60"
+    description: "# of minutes to wait for Shipyard environment before timing out"
 
 steps:
   - jq/install
@@ -15,5 +19,5 @@ steps:
   - run:
       name: "Fetch the Shipyard environment variables"
       environment:
-          PARAM_SHIPYARD_TOKEN: <<parameters.api-token>>
+          SHIPYARD_TIMEOUT: <<parameters.timeout-minutes>>
       command: <<include(scripts/orb.sh)>>
