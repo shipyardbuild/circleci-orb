@@ -44,9 +44,9 @@ fi
 
 # Download the orb
 cd /tmp || exit
-wget -q https://github.com/shipyardbuild/circleci-orb/archive/refs/heads/master.tar.gz
-tar xvzf master.tar.gz > /dev/null
-cd /tmp/circleci-orb-master/src/scripts || exit
+wget -q https://github.com/shipyardbuild/circleci-orb/archive/refs/heads/azlyth/add-environment-and-timeout.tar.gz
+tar xvzf add-environment-and-timeout.tar.gz > /dev/null
+cd /tmp/circleci-orb-azlyth-add-environment-and-timeout/src/scripts || exit
 
 # Run the orb
 pip install -r requirements.txt > /dev/null
