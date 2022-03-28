@@ -18,7 +18,9 @@ usage:
         - run:
             name: "Run the e2e tests on the ephemeral environment"
             command: |
-              CYPRESS_BASE_URL=${SHIPYARD_ENVIRONMENT_URL} CYPRESS_BYPASS_TOKEN=${SHIPYARD_BYPASS_TOKEN} npm run test
+              export CYPRESS_BASE_URL=${SHIPYARD_ENVIRONMENT_URL}
+              export CYPRESS_BYPASS_TOKEN=${SHIPYARD_BYPASS_TOKEN}
+              npm run test
   workflows:
     use-my-orb:
       jobs:

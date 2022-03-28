@@ -11,12 +11,15 @@ then put its data in the environment.
 - CIRCLE_PROJECT_REPONAME
 - CIRCLE_PROJECT_BRANCH
 - SHIPYARD_API_TOKEN
+- SHIPYARD_TIMEOUT
 """
 from __future__ import print_function
 
 import os
 import sys
 import time
+from datetime import datetime
+from datetime import timedelta
 
 import swagger_client
 from swagger_client.rest import ApiException
@@ -41,6 +44,13 @@ branch = os.environ.get("CIRCLE_BRANCH")
 api_token = os.environ.get('SHIPYARD_API_TOKEN')
 if not api_token:
     exit('No SHIPYARD_API_TOKEN provided, exiting.')
+
+# Get the timeout
+timeout_minutes = os.environ.get('SHIPYARD_TIMEOUT')
+try:
+    timeout_minutes = int(timeout_minutes)
+except Exception:
+    exit('ERROR: the SHIPYARD_TIMEOUT provided ("{}") is not an integer'.format(timeout))
 
 # Prepare API client
 configuration = swagger_client.Configuration()
@@ -102,8 +112,16 @@ def wait_for_environment():
     # Check the environment
     environment_id, environment_data = fetch_shipyard_environment()
 
+    start = datetime.now()
+    timeout_end = datetime.now() + timedelta(minutes=timeout_minutes)
+
     # Until the environment is ready
     while not environment_data['ready']:
+        now = datetime.now()
+        # Check if the timeout has elapsed
+        if datetime.now() > timeout_end:
+            exit('{} minute timeout elapsed, exiting!'.format(timeout_minutes))
+
         # Auto-restart the environment once if indicated
         if all([environment_data['retired'], auto_restart, not was_restarted]):
             restart_environment(environment_id)
@@ -113,7 +131,9 @@ def wait_for_environment():
             exit('ERROR: this environment is stopped and no builds are processing')
 
         # Wait 15 seconds
-        print("Waiting for Shipyard environment...")
+        seconds_waited = int((now - start).total_seconds())
+        wait_string = ' ({}s elapsed)'.format(seconds_waited) if seconds_waited else ''
+        print("Waiting for Shipyard environment...{}".format(wait_string))
         time.sleep(15)
 
         # Check on the environment again
@@ -130,13 +150,28 @@ def main():
 
     _, environment_data = wait_for_environment()
 
+    try:
+        # Try to fetch the commit hash of classic environments
+        commit_hash = environment_data.get('commit_hash')
+
+        # Fetch the commit hash if this is a single-repo app
+        if not commit_hash:
+            projects = environment_data.get('projects')
+            if len(projects) == 1:
+                commit_hash = projects[0]['commit_hash']
+    except Exception:
+        print('WARNING: unable to retrieve commit hash')
+        commit_hash = None
+
     # Write the data to the job's environment
     with open(bash_env_path, 'a') as bash_env:
         bash_env.write('\n'.join([
             'export SHIPYARD_BYPASS_TOKEN={}'.format(environment_data["bypass_token"]),
             'export SHIPYARD_ENVIRONMENT_URL={}'.format(environment_data["url"]),
             'export SHIPYARD_ENVIRONMENT_READY={}'.format(environment_data["ready"]),
-        ]))
+            'export SHIPYARD_ENVIRONMENT_RETIRED={}'.format(environment_data["retired"]),
+        ] + ['export SHIPYARD_ENVIRONMENT_COMMIT_HASH={}'.format(commit_hash)] if commit_hash else []
+        ))
 
     print('Shipyard environment data written to {}!'.format(bash_env_path))
 
