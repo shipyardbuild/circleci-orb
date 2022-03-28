@@ -112,11 +112,14 @@ def wait_for_environment():
     # Check the environment
     environment_id, environment_data = fetch_shipyard_environment()
 
+    start = datetime.now()
+    timeout_end = datetime.now() + timedelta(minutes=timeout_minutes)
+
     # Until the environment is ready
-    end = datetime.now() + timedelta(minutes=timeout_minutes)
     while not environment_data['ready']:
+        now = datetime.now()
         # Check if the timeout has elapsed
-        if datetime.now() > end:
+        if datetime.now() > timeout_end:
             exit('{} minute timeout elapsed, exiting!'.format(timeout_minutes))
 
         # Auto-restart the environment once if indicated
@@ -128,7 +131,9 @@ def wait_for_environment():
             exit('ERROR: this environment is stopped and no builds are processing')
 
         # Wait 15 seconds
-        print("Waiting for Shipyard environment...")
+        seconds_waited = int((now - start).total_seconds())
+        wait_string = ' ({}s elapsed)'.format(seconds_waited) if seconds_waited else ''
+        print("Waiting for Shipyard environment...{}".format(wait_string))
         time.sleep(15)
 
         # Check on the environment again
