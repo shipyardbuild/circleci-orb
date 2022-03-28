@@ -7,8 +7,8 @@ parameters:
     default: "SHIPYARD_API_TOKEN"
     description: "Shipyard API token used to fetch necessary environment variables from Shipyard."
   timeout-minutes:
-    type: string
-    default: "60"
+    type: integer
+    default: 60
     description: "# of minutes to wait for Shipyard environment before timing out"
 
 steps:
