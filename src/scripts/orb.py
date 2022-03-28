@@ -130,13 +130,28 @@ def main():
 
     _, environment_data = wait_for_environment()
 
+    try:
+        # Try to fetch the commit hash of classic environments
+        commit_hash = environment_data.get('commit_hash')
+
+        # Fetch the commit hash if this is a single-repo app
+        if not commit_hash:
+            projects = environment_data.get('projects')
+            if len(projects) == 1:
+                commit_hash = projects[0]['commit_hash']
+    except Exception:
+        print('WARNING: unable to retrieve commit hash')
+        commit_hash = None
+
     # Write the data to the job's environment
     with open(bash_env_path, 'a') as bash_env:
         bash_env.write('\n'.join([
             'export SHIPYARD_BYPASS_TOKEN={}'.format(environment_data["bypass_token"]),
             'export SHIPYARD_ENVIRONMENT_URL={}'.format(environment_data["url"]),
             'export SHIPYARD_ENVIRONMENT_READY={}'.format(environment_data["ready"]),
-        ]))
+            'export SHIPYARD_ENVIRONMENT_RETIRED={}'.format(environment_data["retired"]),
+        ] + ['export SHIPYARD_ENVIRONMENT_COMMIT_HASH={}'.format(commit_hash)] if commit_hash else []
+        ))
 
     print('Shipyard environment data written to {}!'.format(bash_env_path))
 
