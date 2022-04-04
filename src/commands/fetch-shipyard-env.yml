@@ -2,20 +2,33 @@ description: >
   Collects the SHIPYARD_ENVIRONMENT_URL and SHIPYARD_BYPASS_TOKEN for an environment
 
 parameters:
+
   api-token:
     type: env_var_name
     default: "SHIPYARD_API_TOKEN"
     description: "Shipyard API token used to fetch necessary environment variables from Shipyard."
+
   timeout-minutes:
     type: integer
     default: 60
     description: "# of minutes to wait for Shipyard environment before timing out"
 
+  exit-if-not-pull-request:
+    type: boolean
+    default: false
+    description: "Gracefully exit CircleCI job if this job is not for a pull request"
+
 steps:
+  - when:
+      condition:
+        equal: [ true, << parameters.exit-if-not-pull-request >> ]
+      steps:
+        - run:
+            name: "Gracefully exit if this is not a PR branch"
+            command: "[[ -z $CIRCLE_PULL_REQUEST ]] && circleci-agent task halt || echo This job is for: $CIRCLE_PULL_REQUEST"
+
   - jq/install
-  - run:
-      name: "Gracefully exit if this is not a PR branch"
-      command: "[[ -z $CIRCLE_PULL_REQUEST ]] && circleci-agent task halt || echo This job is for: $CIRCLE_PULL_REQUEST"
+
   - run:
       name: "Fetch the Shipyard environment variables"
       environment:
