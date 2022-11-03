@@ -50,7 +50,9 @@ timeout_minutes = os.environ.get('SHIPYARD_TIMEOUT')
 try:
     timeout_minutes = int(timeout_minutes)
 except Exception:
-    exit('ERROR: the SHIPYARD_TIMEOUT provided ("{}") is not an integer'.format(timeout))
+    exit('ERROR: the SHIPYARD_TIMEOUT provided ("{}") is not an integer'.format(timeout_minutes))
+
+app_name = os.environ.get('SHIPYARD_APP_NAME')
 
 # Prepare API client
 configuration = swagger_client.Configuration()
@@ -66,7 +68,8 @@ def fetch_shipyard_environment():
     try:
         response = api_instance.list_environments(org_name=org_name,
                                                   repo_name=repo,
-                                                  branch=branch).to_dict()
+                                                  branch=branch,
+                                                  name=app_name).to_dict()
     except ApiException as e:
         exit("ERROR: issue while listing environments via API: {}".format(e))
 
