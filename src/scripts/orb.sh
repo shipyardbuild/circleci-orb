@@ -44,9 +44,10 @@ fi
 
 # Download the orb
 cd /tmp || exit
-wget -q https://github.com/shipyardbuild/circleci-orb/archive/refs/heads/master.tar.gz
-tar xvzf master.tar.gz > /dev/null
-cd /tmp/circleci-orb-master/src/scripts || exit
+# wget -q https://github.com/shipyardbuild/circleci-orb/archive/refs/heads/master.tar.gz
+wget -q https://github.com/shipyardbuild/circleci-orb/archive/refs/heads/akshaykalia6299/sc-13326/shipyard-orb-and-github-action-should-accept.zip
+tar xvzf shipyard-orb-and-github-action-should-accept.zip > /dev/null
+cd /tmp/circleci-orb-akshaykalia6299-sc-13326-shipyard-orb-and-github-action-should-accept/src/scripts || exit
 
 # Run the orb
 pip install -r requirements.txt > /dev/null
