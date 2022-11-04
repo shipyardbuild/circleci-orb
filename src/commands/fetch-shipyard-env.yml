@@ -33,6 +33,10 @@ steps:
             command: "[[ -z $CIRCLE_PULL_REQUEST ]] && circleci-agent task halt || echo This job is for: $CIRCLE_PULL_REQUEST"
 
   - jq/install
+  - run:
+      name: "Check Python Version"
+      environment:
+      command: which python
   - python/install-packages:
       pip-dependency-file: src/scripts/requirements.txt
       pkg-manager: pip
