@@ -9,8 +9,7 @@ if ! which python > /dev/null; then
 
     which apt-get > /dev/null && \
         $ADD_SUDO apt-get update -qq > /dev/null && \
-        $ADD_SUDO apt-get install -qq python3 > /dev/null && \
-        alias python=python3 && \
+        $ADD_SUDO apt-get install -qq python3 python-is-python3 > /dev/null && \
         echo Installed!
 
     which yum > /dev/null && \
