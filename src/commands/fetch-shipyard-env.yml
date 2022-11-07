@@ -34,15 +34,8 @@ steps:
 
   - jq/install
   - run:
-      name: "Check Python Version"
-      environment:
-      command: which python
-  - python/install-packages:
-      pip-dependency-file: src/scripts/requirements.txt
-      pkg-manager: pip
-  - run:
       name: "Fetch the Shipyard environment variables"
       environment:
           SHIPYARD_TIMEOUT: <<parameters.timeout-minutes>>
           SHIPYARD_APP_NAME: <<parameters.app-name>>
-      command: python src/scripts/orb.py
+      command: <<include(scripts/orb.sh)>>
