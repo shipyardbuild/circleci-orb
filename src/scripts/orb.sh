@@ -63,7 +63,7 @@ ls "${CIRCLE_WORKING_DIRECTORY}/src/scripts"
 echo "src-2:"
 ls src
 echo "scripts-2:"
-ls src/scripts"
+ls src/scripts
 
 # Run the orb
 pip install -r requirements.txt > /dev/null
