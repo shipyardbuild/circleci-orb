@@ -53,10 +53,10 @@ fi
 # tar xvzf shipyard-orb-and-github-action-should-accept.tar.gz > /dev/null
 pwd
 ls
-
-cd "${CIRCLE_WORKING_DIRECTORY}/src/scripts" || exit
-
-ls
+echo "src:"
+ls "${CIRCLE_WORKING_DIRECTORY}/src" || exit
+echo "scripts:"
+ls "${CIRCLE_WORKING_DIRECTORY}/src/scripts"
 
 # Run the orb
 pip install -r requirements.txt > /dev/null
