@@ -54,17 +54,13 @@ fi
 pwd
 ls
 echo "dir:"
-ls "${CIRCLE_WORKING_DIRECTORY}"
+ls "/home/circleci/project"
 echo "src:"
-ls "${CIRCLE_WORKING_DIRECTORY}/src"
+ls "/home/circleci/project/src"
 echo "scripts:"
-ls "${CIRCLE_WORKING_DIRECTORY}/src/scripts"
+ls "/home/circleci/project/src/scripts"
 
-echo "src-2:"
-ls src
-echo "scripts-2:"
-ls src/scripts
-
+cd /home/circleci/project/src/scripts || exit
 # Run the orb
 pip install -r requirements.txt > /dev/null
 python orb.py 
