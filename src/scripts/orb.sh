@@ -5,8 +5,9 @@ if ! which python > /dev/null; then
     echo "Trying to install Python..."
 
     which apt-get > /dev/null && \
-        apt-get update -qq > /dev/null && \
-        apt-get install -qq python > /dev/null && \
+        sudo apt-get update -qq > /dev/null && \
+        sudo apt-get install -qq python3 > /dev/null && \
+        alias python=python3 && \
         echo Installed!
 
     which yum > /dev/null && \
@@ -19,8 +20,9 @@ if ! which pip > /dev/null; then
     echo "Trying to install pip..."
 
     which apt-get > /dev/null && \
-        apt-get update -qq > /dev/null && \
-        apt-get install -qq python-pip > /dev/null && \
+        sudo apt-get update -qq > /dev/null && \
+        sudo apt-get install -qq python3-pip > /dev/null && \
+        alias pip=pip3 && \
         echo Installed!
 
     which yum > /dev/null && \
@@ -33,8 +35,8 @@ if ! which wget > /dev/null; then
     echo "Trying to install wget..."
 
     which apt-get > /dev/null && \
-        apt-get update -qq > /dev/null && \
-        apt-get install -qq wget > /dev/null && \
+        sudo apt-get update -qq > /dev/null && \
+        sudo apt-get install -qq wget > /dev/null && \
         echo Installed!
 
     which yum > /dev/null && \
