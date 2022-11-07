@@ -1,12 +1,15 @@
 #!/usr/bin/env sh
 
+# Check if sudo available
+ADD_SUDO=$(if which sudo > /dev/null; then echo "sudo"; else echo ""; fi)
+
 # Install Python
 if ! which python > /dev/null; then
     echo "Trying to install Python..."
 
     which apt-get > /dev/null && \
-        sudo apt-get update -qq > /dev/null && \
-        sudo apt-get install -qq python3 > /dev/null && \
+        $ADD_SUDO apt-get update -qq > /dev/null && \
+        $ADD_SUDO apt-get install -qq python3 > /dev/null && \
         alias python=python3 && \
         echo Installed!
 
@@ -20,8 +23,8 @@ if ! which pip > /dev/null; then
     echo "Trying to install pip..."
 
     which apt-get > /dev/null && \
-        sudo apt-get update -qq > /dev/null && \
-        sudo apt-get install -qq python3-pip > /dev/null && \
+        $ADD_SUDO apt-get update -qq > /dev/null && \
+        $ADD_SUDO apt-get install -qq python3-pip > /dev/null && \
         alias pip=pip3 && \
         echo Installed!
 
@@ -35,8 +38,8 @@ if ! which wget > /dev/null; then
     echo "Trying to install wget..."
 
     which apt-get > /dev/null && \
-        sudo apt-get update -qq > /dev/null && \
-        sudo apt-get install -qq wget > /dev/null && \
+        $ADD_SUDO apt-get update -qq > /dev/null && \
+        $ADD_SUDO apt-get install -qq wget > /dev/null && \
         echo Installed!
 
     which yum > /dev/null && \
