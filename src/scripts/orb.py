@@ -36,7 +36,7 @@ if not bash_env_path:
     exit('ERROR: missing BASH_ENV environment variable')
 
 # Constants
-org_name = os.environ.get("CIRCLE_PROJECT_USERNAME")
+repo_owner = os.environ.get("CIRCLE_PROJECT_USERNAME")
 repo = os.environ.get("CIRCLE_PROJECT_REPONAME")
 branch = os.environ.get("CIRCLE_BRANCH")
 
@@ -66,7 +66,7 @@ def fetch_shipyard_environment():
 
     # Hit the Shipyard API
     try:
-        response = api_instance.list_environments(org_name=org_name,
+        response = api_instance.list_environments(repo_owner=repo_owner,
                                                   repo_name=repo,
                                                   branch=branch,
                                                   name=app_name).to_dict()
