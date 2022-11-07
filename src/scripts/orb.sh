@@ -1,15 +1,18 @@
 #!/usr/bin/env sh
 
 # Check if sudo available
-ADD_SUDO=$(if which sudo > /dev/null; then echo "sudo"; else echo ""; fi)
+if [[ $EUID == 0 ]]; then export SUDO=""; else # Check if we are root
+  export SUDO="sudo";
+fi
+
 
 # Install Python
 if ! which python > /dev/null; then
     echo "Trying to install Python..."
 
     which apt-get > /dev/null && \
-        $ADD_SUDO apt-get update -qq > /dev/null && \
-        $ADD_SUDO apt-get install -qq python3 python-is-python3 > /dev/null && \
+        $SUDO apt-get update -qq > /dev/null && \
+        $SUDO apt-get install -qq python3 python-is-python3 > /dev/null && \
         echo Installed!
 
     which yum > /dev/null && \
@@ -22,8 +25,8 @@ if ! which pip > /dev/null; then
     echo "Trying to install pip..."
 
     which apt-get > /dev/null && \
-        $ADD_SUDO apt-get update -qq > /dev/null && \
-        $ADD_SUDO apt-get install -qq python3-pip > /dev/null && \
+        $SUDO apt-get update -qq > /dev/null && \
+        $SUDO apt-get install -qq python3-pip > /dev/null && \
         alias pip=pip3 && \
         echo Installed!
 
@@ -37,8 +40,8 @@ if ! which wget > /dev/null; then
     echo "Trying to install wget..."
 
     which apt-get > /dev/null && \
-        $ADD_SUDO apt-get update -qq > /dev/null && \
-        $ADD_SUDO apt-get install -qq wget > /dev/null && \
+        $SUDO apt-get update -qq > /dev/null && \
+        $SUDO apt-get install -qq wget > /dev/null && \
         echo Installed!
 
     which yum > /dev/null && \
@@ -53,14 +56,14 @@ fi
 # tar xvzf shipyard-orb-and-github-action-should-accept.tar.gz > /dev/null
 pwd
 ls
-echo "dir:"
-ls "/home/circleci/project"
-echo "src:"
-ls "/home/circleci/project/src"
-echo "scripts:"
-ls "/home/circleci/project/src/scripts"
+# echo "dir:"
+# ls "/home/circleci/project"
+# echo "src:"
+# ls "/home/circleci/project/src"
+# echo "scripts:"
+# ls "/home/circleci/project/src/scripts"
 
-cd /home/circleci/project/src/scripts || exit
+# cd /home/circleci/project/src/scripts || exit
 # Run the orb
-pip install -r requirements.txt > /dev/null
-python orb.py 
+# pip install -r requirements.txt > /dev/null
+# python orb.py 

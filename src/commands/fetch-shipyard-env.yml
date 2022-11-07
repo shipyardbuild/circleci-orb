@@ -34,8 +34,14 @@ steps:
 
   - jq/install
   - run:
+      name: "Install Python"
+      command: <<include(scripts/orb.sh)>>
+  - run:
+      name: "Install Dependencies"
+      command: pip install -r <<include(scripts/requirements.txt)>>
+  - run:
       name: "Fetch the Shipyard environment variables"
       environment:
           SHIPYARD_TIMEOUT: <<parameters.timeout-minutes>>
           SHIPYARD_APP_NAME: <<parameters.app-name>>
-      command: <<include(scripts/orb.sh)>>
+      command: python <<include(scripts/orb.py)>>
