@@ -51,7 +51,12 @@ fi
 # wget -q https://github.com/shipyardbuild/circleci-orb/archive/refs/heads/master.tar.gz
 # wget -q https://github.com/shipyardbuild/circleci-orb/archive/refs/heads/akshaykalia6299/sc-13326/shipyard-orb-and-github-action-should-accept.tar.gz
 # tar xvzf shipyard-orb-and-github-action-should-accept.tar.gz > /dev/null
-cd src/scripts || exit
+pwd
+ls
+
+cd $CIRCLE_WORKING_DIRECTORY/src/scripts || exit
+
+ls
 
 # Run the orb
 pip install -r requirements.txt > /dev/null
