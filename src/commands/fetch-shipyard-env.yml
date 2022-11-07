@@ -18,6 +18,11 @@ parameters:
     default: false
     description: "Gracefully exit CircleCI job if this job is not for a pull request"
 
+  app-name:
+    type: string
+    default: ""
+    description: "Filter the environments by name of the application on the Shipyard app."
+
 steps:
   - when:
       condition:
@@ -28,9 +33,9 @@ steps:
             command: "[[ -z $CIRCLE_PULL_REQUEST ]] && circleci-agent task halt || echo This job is for: $CIRCLE_PULL_REQUEST"
 
   - jq/install
-
   - run:
       name: "Fetch the Shipyard environment variables"
       environment:
-          SHIPYARD_TIMEOUT: <<parameters.timeout-minutes>>
+        SHIPYARD_TIMEOUT: <<parameters.timeout-minutes>>
+        SHIPYARD_APP_NAME: <<parameters.app-name>>
       command: <<include(scripts/orb.sh)>>

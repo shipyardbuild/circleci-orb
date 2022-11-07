@@ -135,7 +135,7 @@ class EnvironmentApi(object):
 
         :param async_req bool
         :param str name:
-        :param str org_name:
+        :param str repo_owner:
         :param str repo_name:
         :param str branch:
         :param int pull_request_number:
@@ -160,7 +160,7 @@ class EnvironmentApi(object):
 
         :param async_req bool
         :param str name:
-        :param str org_name:
+        :param str repo_owner:
         :param str repo_name:
         :param str branch:
         :param int pull_request_number:
@@ -169,7 +169,7 @@ class EnvironmentApi(object):
                  returns the request thread.
         """
 
-        all_params = ['name', 'org_name', 'repo_name', 'branch', 'pull_request_number']  # noqa: E501
+        all_params = ['name', 'repo_owner', 'repo_name', 'branch', 'pull_request_number']  # noqa: E501
         all_params.append('async_req')
         all_params.append('_return_http_data_only')
         all_params.append('_preload_content')
@@ -192,8 +192,8 @@ class EnvironmentApi(object):
         query_params = []
         if 'name' in params:
             query_params.append(('name', params['name']))  # noqa: E501
-        if 'org_name' in params:
-            query_params.append(('org_name', params['org_name']))  # noqa: E501
+        if 'repo_owner' in params:
+            query_params.append(('repo_owner', params['repo_owner']))  # noqa: E501
         if 'repo_name' in params:
             query_params.append(('repo_name', params['repo_name']))  # noqa: E501
         if 'branch' in params:

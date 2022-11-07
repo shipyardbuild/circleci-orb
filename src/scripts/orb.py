@@ -36,7 +36,7 @@ if not bash_env_path:
     exit('ERROR: missing BASH_ENV environment variable')
 
 # Constants
-org_name = os.environ.get("CIRCLE_PROJECT_USERNAME")
+repo_owner = os.environ.get("CIRCLE_PROJECT_USERNAME")
 repo = os.environ.get("CIRCLE_PROJECT_REPONAME")
 branch = os.environ.get("CIRCLE_BRANCH")
 
@@ -50,7 +50,9 @@ timeout_minutes = os.environ.get('SHIPYARD_TIMEOUT')
 try:
     timeout_minutes = int(timeout_minutes)
 except Exception:
-    exit('ERROR: the SHIPYARD_TIMEOUT provided ("{}") is not an integer'.format(timeout))
+    exit('ERROR: the SHIPYARD_TIMEOUT provided ("{}") is not an integer'.format(timeout_minutes))
+
+app_name = os.environ.get('SHIPYARD_APP_NAME')
 
 # Prepare API client
 configuration = swagger_client.Configuration()
@@ -64,9 +66,10 @@ def fetch_shipyard_environment():
 
     # Hit the Shipyard API
     try:
-        response = api_instance.list_environments(org_name=org_name,
+        response = api_instance.list_environments(repo_owner=repo_owner,
                                                   repo_name=repo,
-                                                  branch=branch).to_dict()
+                                                  branch=branch,
+                                                  name=app_name).to_dict()
     except ApiException as e:
         exit("ERROR: issue while listing environments via API: {}".format(e))
 
