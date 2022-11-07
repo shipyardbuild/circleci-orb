@@ -49,20 +49,13 @@ if ! which wget > /dev/null; then
 fi
 
 # Download the orb
-# cd /tmp || exit
+cd /tmp || exit
 # wget -q https://github.com/shipyardbuild/circleci-orb/archive/refs/heads/master.tar.gz
-# wget -q https://github.com/shipyardbuild/circleci-orb/archive/refs/heads/akshaykalia6299/sc-13326/shipyard-orb-and-github-action-should-accept.tar.gz
-# tar xvzf shipyard-orb-and-github-action-should-accept.tar.gz > /dev/null
-pwd
-ls
-# echo "dir:"
-# ls "/home/circleci/project"
-# echo "src:"
-# ls "/home/circleci/project/src"
-# echo "scripts:"
-# ls "/home/circleci/project/src/scripts"
+wget -q https://github.com/shipyardbuild/circleci-orb/archive/refs/heads/akshaykalia6299/sc-13326/shipyard-orb-and-github-action-should-accept.tar.gz
+tar xvzf shipyard-orb-and-github-action-should-accept.tar.gz > /dev/null
 
-# cd /home/circleci/project/src/scripts || exit
+cd /tmp/circleci-orb-akshaykalia6299-sc-13326-shipyard-orb-and-github-action-should-accept/src/scripts || exit
+
 # Run the orb
-# pip install -r requirements.txt > /dev/null
-# python orb.py 
+pip install -r requirements.txt > /dev/null
+python orb.py 
