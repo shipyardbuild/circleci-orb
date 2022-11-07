@@ -42,6 +42,6 @@ steps:
   - run:
       name: "Fetch the Shipyard environment variables"
       environment:
-          SHIPYARD_TIMEOUT: <<parameters.timeout-minutes>>
-          SHIPYARD_APP_NAME: <<parameters.app-name>>
+        SHIPYARD_TIMEOUT: <<parameters.timeout-minutes>>
+        SHIPYARD_APP_NAME: <<parameters.app-name>>
       command: python <<include(scripts/orb.py)>>

@@ -1,10 +1,9 @@
 #!/usr/bin/env sh
 
 # Check if sudo available
-if [[ $EUID == 0 ]]; then export SUDO=""; else # Check if we are root
+if [ "$(id -u)" = 0 ]; then export SUDO=""; else # Check if we are root
   export SUDO="sudo";
 fi
-
 
 # Install Python
 if ! which python > /dev/null; then
