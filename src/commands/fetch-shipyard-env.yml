@@ -38,10 +38,10 @@ steps:
       command: <<include(scripts/orb.sh)>>
   - run:
       name: "Install Dependencies"
-      command: pip install -r <<include(scripts/requirements.txt)>>
+      command: pip install -r src/scripts/requirements.txt
   - run:
       name: "Fetch the Shipyard environment variables"
       environment:
         SHIPYARD_TIMEOUT: <<parameters.timeout-minutes>>
         SHIPYARD_APP_NAME: <<parameters.app-name>>
-      command: python <<include(scripts/orb.py)>>
+      command: python src/scripts/orb.py
