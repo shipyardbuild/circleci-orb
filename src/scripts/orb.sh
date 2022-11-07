@@ -26,7 +26,7 @@ if ! which pip > /dev/null; then
     which apt-get > /dev/null && \
         $SUDO apt-get update -qq > /dev/null && \
         $SUDO apt-get install -qq python3-pip > /dev/null && \
-        alias pip=pip3 && \
+        $SUDO ln -s /usr/bin/pip3 /usr/bin/pip && \
         echo Installed!
 
     which yum > /dev/null && \
