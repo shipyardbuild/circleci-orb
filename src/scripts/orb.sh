@@ -11,7 +11,7 @@ if ! which python > /dev/null; then
 
     which apt-get > /dev/null && \
         $SUDO apt-get update -qq > /dev/null && \
-        $SUDO apt-get install -qq python3 python-is-python3 > /dev/null && \
+        $SUDO apt-get install -qq python3 python-is-python3 python3-six > /dev/null && \
         echo Installed!
 
     which yum > /dev/null && \
