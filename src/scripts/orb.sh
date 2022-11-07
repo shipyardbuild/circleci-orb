@@ -54,7 +54,7 @@ fi
 pwd
 ls
 
-cd ${CIRCLE_WORKING_DIRECTORY}/src/scripts || exit
+cd "${CIRCLE_WORKING_DIRECTORY}/src/scripts" || exit
 
 ls
 
