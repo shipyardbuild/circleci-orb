@@ -68,8 +68,7 @@ def fetch_shipyard_environment():
     try:
         response = api_instance.list_environments(repo_owner=repo_owner,
                                                   repo_name=repo,
-                                                  branch=branch,
-                                                  name=app_name).to_dict()
+                                                  branch=branch).to_dict()
     except ApiException as e:
         exit("ERROR: issue while listing environments via API: {}".format(e))
 
