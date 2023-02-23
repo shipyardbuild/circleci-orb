@@ -34,6 +34,12 @@ steps:
 
   - jq/install
   - run:
+      name: "Check python exists"
+      command: |
+        echo test
+        python --version
+        pip --version
+  - run:
       name: "Fetch the Shipyard environment variables"
       environment:
         SHIPYARD_TIMEOUT: <<parameters.timeout-minutes>>
