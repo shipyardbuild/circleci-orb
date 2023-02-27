@@ -9,3 +9,4 @@ display:
 
 orbs:
   jq: circleci/jq@2.2.0
+  python: circleci/python@2.1.1
