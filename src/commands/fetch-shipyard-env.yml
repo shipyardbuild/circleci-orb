@@ -35,6 +35,7 @@ steps:
   - jq/install
   - python/install-packages:
       pkg-manager: pip
+      app-dir: scripts
   - run:
       name: "Check python exists"
       command: |
