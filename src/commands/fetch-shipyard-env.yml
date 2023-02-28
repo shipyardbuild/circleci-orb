@@ -33,6 +33,8 @@ steps:
             command: "[[ -z $CIRCLE_PULL_REQUEST ]] && circleci-agent task halt || echo This job is for: $CIRCLE_PULL_REQUEST"
 
   - jq/install
+  - python/install-packages:
+      pkg-manager: pip
   - run:
       name: "Check python exists"
       command: |
