@@ -11,7 +11,7 @@ if ! which python > /dev/null; then
 
     which apt-get > /dev/null && \
         $SUDO apt-get update -qq > /dev/null && \
-        $SUDO apt-get install -qq python > /dev/null && \
+        $SUDO apt-get install -qq python3 python-is-python3 python3-six > /dev/null && \
         echo Installed!
 
     which yum > /dev/null && \
@@ -25,7 +25,8 @@ if ! which pip > /dev/null; then
 
     which apt-get > /dev/null && \
         $SUDO apt-get update -qq > /dev/null && \
-        $SUDO apt-get install -qq python-pip > /dev/null && \
+        $SUDO apt-get install -qq python3-pip > /dev/null && \
+        $SUDO ln -s /usr/bin/pip3 /usr/bin/pip > /dev/null && \
         echo Installed!
 
     which yum > /dev/null && \
