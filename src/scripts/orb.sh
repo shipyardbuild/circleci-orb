@@ -25,7 +25,7 @@ if ! which python3 --version > /dev/null; then
 
     python --version
     python3 --version
-    $SUDO ln -s /usr/bin/python3 /usr/bin/python > /dev/null
+    $SUDO ln -sf /usr/bin/python3 /usr/bin/python > /dev/null
     python --version
 fi
 
