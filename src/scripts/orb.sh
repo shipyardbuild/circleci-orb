@@ -9,6 +9,10 @@ which python
 which apt-get
 python --version
 
+if ! which python3 --version > /dev/null; then
+    echo "Need to install python3"
+fi
+
 # Install Python
 if ! which python > /dev/null; then
     echo "Trying to install Python..."
