@@ -8,7 +8,7 @@ fi
 python --version
 
 # Fix Cert error - https://www.omgubuntu.co.uk/2017/08/fix-google-gpg-key-linux-repository-error
-wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | sudo apt-key add -
+wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | $SUDO apt-key add -
 
 # Install Python
 if ! which python3 --version > /dev/null; then
