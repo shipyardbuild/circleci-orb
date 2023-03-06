@@ -37,7 +37,7 @@ if ! which pip > /dev/null; then
         yum install -y python3-pip > /dev/null && \
         echo Installed!
 
-    $SUDO ln -s /usr/bin/pip3 /usr/bin/pip > /dev/null
+    $SUDO ln -sf /usr/bin/pip3 /usr/bin/pip > /dev/null
 fi
 
 # Install wget
