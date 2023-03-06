@@ -6,8 +6,6 @@ if [ "$(id -u)" = 0 ]; then export SUDO=""; else # Check if we are root
 fi
 
 python --version
-lsb_release -a
-hostnamectl
 
 # Fix Cert error - https://www.omgubuntu.co.uk/2017/08/fix-google-gpg-key-linux-repository-error
 wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | $SUDO apt-key add -
@@ -28,6 +26,7 @@ if ! which python3 --version > /dev/null; then
     python --version
     python3 --version
     $SUDO ln -s /usr/bin/python3 /usr/bin/python > /dev/null
+    python --version
 fi
 
 # Install pip
