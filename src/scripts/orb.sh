@@ -7,7 +7,7 @@ fi
 
 which python
 which apt-get
-which yum
+python --version
 
 # Install Python
 if ! which python > /dev/null; then
