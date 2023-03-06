@@ -5,16 +5,10 @@ if [ "$(id -u)" = 0 ]; then export SUDO=""; else # Check if we are root
   export SUDO="sudo";
 fi
 
-which python
-which apt-get
 python --version
 
-if ! which python3 --version > /dev/null; then
-    echo "Need to install python3"
-fi
-
 # Install Python
-if ! which python > /dev/null; then
+if ! which python3 --version > /dev/null; then
     echo "Trying to install Python..."
 
     which apt-get > /dev/null && \
