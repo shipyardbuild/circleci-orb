@@ -1,5 +1,5 @@
 description: >
-  This is a sample executor using Docker and Node.
+  This is a sample executor using Docker and Python.
 docker:
   - image: 'cimg/python:<<parameters.tag>>'
 parameters:

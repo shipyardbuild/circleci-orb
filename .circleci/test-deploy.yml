@@ -17,7 +17,7 @@ jobs:
       - checkout
       # Run your orb's commands to validate them.
       - shipyard/fetch-shipyard-env:
-          timeout-minutes: 30
+          timeout-minutes: 10
           exit-if-not-pull-request: true
 workflows:
   test-deploy:
