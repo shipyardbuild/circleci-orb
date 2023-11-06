@@ -7,7 +7,7 @@ description: >
 usage:
   version: 2.1
   orbs:
-    shipyard: shipyard/shipyard@1
+    shipyard: shipyard/shipyard@3.6.1
   jobs:
     ephemeral-e2e-tests:
       executor:
