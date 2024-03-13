@@ -156,8 +156,6 @@ def main():
     """
 
     environment_id, environment_data = wait_for_environment()
-    print(environment_id)
-    print(environment_data)
 
     try:
         commit_hash = None
@@ -174,8 +172,6 @@ def main():
         print('WARNING: unable to retrieve commit hash')
         commit_hash = None
 
-    print("-->")
-
     # Write the data to the job's environment
     with open(bash_env_path, 'a') as bash_env:
         bash_env.write('\n'.join([
@@ -186,11 +182,6 @@ def main():
             'export SHIPYARD_ENVIRONMENT_RETIRED={}'.format(environment_data["retired"]),
         ] + (['export SHIPYARD_ENVIRONMENT_COMMIT_HASH={}'.format(commit_hash)] if commit_hash else [])
         ))
-
-    # Open the file in read mode
-    with open(bash_env_path, 'r') as file:
-        file_contents = file.read()
-        print(file_contents)
 
     print(f'Shipyard environment {environment_id} data written to {bash_env_path}!')
 
