@@ -163,11 +163,12 @@ def main():
         projects = environment_data.get('projects')
         # Filter project with non-null pull_request_number
         filtered_projects = [item for item in projects if item["pull_request_number"] is not None]
+        pr_project = None
         if filtered_projects:
-            filtered_projects = filtered_projects[0]
+            pr_project = filtered_projects[0]
         else:
-            filtered_projects = projects[0] if projects else {}
-        commit_hash = filtered_projects.get("commit_hash")
+            pr_project = projects[0] if projects else {}
+        commit_hash = pr_project.get("commit_hash")
     except Exception:
         print('WARNING: unable to retrieve commit hash')
         commit_hash = None
