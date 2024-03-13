@@ -184,7 +184,7 @@ def main():
             'export SHIPYARD_ENVIRONMENT_ID={}'.format(environment_id),
             'export SHIPYARD_ENVIRONMENT_READY={}'.format(environment_data["ready"]),
             'export SHIPYARD_ENVIRONMENT_RETIRED={}'.format(environment_data["retired"]),
-        ] + ['export SHIPYARD_ENVIRONMENT_COMMIT_HASH={}'.format(commit_hash)] if commit_hash else []
+        ] + (['export SHIPYARD_ENVIRONMENT_COMMIT_HASH={}'.format(commit_hash)] if commit_hash else [])
         ))
 
     # Open the file in read mode
