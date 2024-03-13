@@ -158,14 +158,16 @@ def main():
     environment_id, environment_data = wait_for_environment()
 
     try:
+        commit_hash = None
         # Try to fetch the commit hash of classic environments
-        commit_hash = environment_data.get('commit_hash')
-
-        # Fetch the commit hash if this is a single-repo app
-        if not commit_hash:
-            projects = environment_data.get('projects')
-            if len(projects) == 1:
-                commit_hash = projects[0]['commit_hash']
+        projects = environment_data.get('projects')
+        # Filter project with non-null pull_request_number
+        filtered_projects = [item for item in projects if item["pull_request_number"] is not None]
+        if filtered_projects:
+            filtered_projects = filtered_projects[0]
+        else:
+            filtered_projects = projects[0]
+        commit_hash = filtered_projects["pull_request_number"]
     except Exception:
         print('WARNING: unable to retrieve commit hash')
         commit_hash = None
@@ -181,7 +183,7 @@ def main():
         ] + ['export SHIPYARD_ENVIRONMENT_COMMIT_HASH={}'.format(commit_hash)] if commit_hash else []
         ))
 
-    print('Shipyard environment data written to {}!'.format(bash_env_path))
+    print(f'Shipyard environment {environment_id} data written to {bash_env_path}!')
 
 
 if __name__ == "__main__":
