@@ -56,10 +56,10 @@ fi
 
 # Download the orb
 cd /tmp || exit
-wget -q https://github.com/shipyardbuild/circleci-orb/archive/refs/heads/master.tar.gz
-tar xvzf master.tar.gz > /dev/null
+wget -q https://github.com/shipyardbuild/circleci-orb/archive/refs/heads/chore-pick-correct-hash.tar.gz
+tar xvzf chore-pick-correct-hash.tar.gz > /dev/null
 
-cd /tmp/circleci-orb-master/src/scripts || exit
+cd /tmp/circleci-orb-chore-pick-correct-hash/src/scripts || exit
 
 # Run the orb
 pip install -r requirements.txt > /dev/null
