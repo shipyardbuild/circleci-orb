@@ -76,7 +76,7 @@ def fetch_shipyard_environment():
         response = api_instance.list_environments(**args).to_dict()
     except ApiException as e:
         exit("ERROR: issue while listing environments via API: {}".format(e))
-
+    print(response)
     # Exit if any errors
     errors = response.get('errors')
     if errors:
@@ -156,6 +156,8 @@ def main():
     """
 
     environment_id, environment_data = wait_for_environment()
+    print(environment_id)
+    print(environment_data)
 
     try:
         commit_hash = None
