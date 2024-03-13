@@ -166,8 +166,8 @@ def main():
         if filtered_projects:
             filtered_projects = filtered_projects[0]
         else:
-            filtered_projects = projects[0]
-        commit_hash = filtered_projects["pull_request_number"]
+            filtered_projects = projects[0] if projects else {}
+        commit_hash = filtered_projects.get("commit_hash")
     except Exception:
         print('WARNING: unable to retrieve commit hash')
         commit_hash = None
