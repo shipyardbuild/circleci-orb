@@ -76,7 +76,7 @@ def fetch_shipyard_environment():
         response = api_instance.list_environments(**args).to_dict()
     except ApiException as e:
         exit("ERROR: issue while listing environments via API: {}".format(e))
-    print(response)
+
     # Exit if any errors
     errors = response.get('errors')
     if errors:
@@ -174,6 +174,8 @@ def main():
         print('WARNING: unable to retrieve commit hash')
         commit_hash = None
 
+    print("-->")
+
     # Write the data to the job's environment
     with open(bash_env_path, 'a') as bash_env:
         bash_env.write('\n'.join([
@@ -184,6 +186,11 @@ def main():
             'export SHIPYARD_ENVIRONMENT_RETIRED={}'.format(environment_data["retired"]),
         ] + ['export SHIPYARD_ENVIRONMENT_COMMIT_HASH={}'.format(commit_hash)] if commit_hash else []
         ))
+
+    # Open the file in read mode
+    with open(bash_env_path, 'r') as file:
+        file_contents = file.read()
+        print(file_contents)
 
     print(f'Shipyard environment {environment_id} data written to {bash_env_path}!')
 
