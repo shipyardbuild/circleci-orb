@@ -185,6 +185,7 @@ def main():
             'export SHIPYARD_ENVIRONMENT_ID={}'.format(environment_id),
             'export SHIPYARD_ENVIRONMENT_READY={}'.format(environment_data["ready"]),
             'export SHIPYARD_ENVIRONMENT_RETIRED={}'.format(environment_data["retired"]),
+            'export SHIPYARD_DOMAIN={}'.format(environment_data["url"]),
         ] + (['export SHIPYARD_ENVIRONMENT_COMMIT_HASH={}'.format(commit_hash)] if commit_hash else [])
         + shipyard_additional_urls_vars
         ))
