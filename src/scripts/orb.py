@@ -175,7 +175,7 @@ def main():
 
 
     additional_urls = environment_data.get("additional_urls", {})
-    shipyard_additional_urls_vars = [f'export SHIPYARD_DOMAIN_{k.upper()}={v}' for (k,v) in additional_urls.items()]
+    shipyard_additional_urls_vars = [f'export SHIPYARD_DOMAIN_{k.upper().replace("-","_")}={v}' for (k,v) in additional_urls.items()]
 
     # Write the data to the job's environment
     with open(bash_env_path, 'a') as bash_env:
