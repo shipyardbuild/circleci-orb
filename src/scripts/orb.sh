@@ -56,10 +56,10 @@ fi
 
 # Download the orb
 cd /tmp || exit
-wget -q https://github.com/shipyardbuild/circleci-orb/archive/refs/heads/feat/ci-integration-host-injection.tar.gz
-tar xvzf ci-integration-host-injection.tar.gz > /dev/null
+wget -q https://github.com/shipyardbuild/circleci-orb/archive/refs/heads/master.tar.gz
+tar xvzf master.tar.gz > /dev/null
 
-cd /tmp/circleci-orb-feat-ci-integration-host-injection/src/scripts || exit
+cd /tmp/circleci-orb-master/src/scripts || exit
 
 # Run the orb
 pip install -r requirements.txt > /dev/null
