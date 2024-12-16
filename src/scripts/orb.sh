@@ -6,7 +6,8 @@ if [ "$(id -u)" = 0 ]; then export SUDO=""; else # Check if we are root
 fi
 
 # Fix Cert error - https://www.omgubuntu.co.uk/2017/08/fix-google-gpg-key-linux-repository-error
-wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | $SUDO apt-key add -
+wget -q -O /usr/share/keyrings/google-keyring.gpg https://dl.google.com/linux/linux_signing_key.pub
+echo "deb [signed-by=/usr/share/keyrings/google-keyring.gpg] https://dl.google.com/linux/chrome/deb/ stable main" | $SUDO tee /etc/apt/sources.list.d/google-chrome.list > /dev/null
 
 # Install Python
 if ! which python3 --version > /dev/null; then
@@ -14,7 +15,7 @@ if ! which python3 --version > /dev/null; then
 
     which apt-get > /dev/null && \
         $SUDO apt-get update -qq > /dev/null && \
-        $SUDO apt-get install -qq python3 python3-six > /dev/null && \
+        $SUDO apt-get install -qq python3 python3-six apt-utils > /dev/null && \
         echo Installed!
 
     which yum > /dev/null && \
@@ -56,11 +57,11 @@ fi
 
 # Download the orb
 cd /tmp || exit
-wget -q https://github.com/shipyardbuild/circleci-orb/archive/refs/heads/master.tar.gz
-tar xvzf master.tar.gz > /dev/null
+wget -q https://github.com/shipyardbuild/circleci-orb/archive/refs/heads/chore/update-google-gpg.tar.gz
+tar xvzf update-google-gpg.tar.gz > /dev/null
 
-cd /tmp/circleci-orb-master/src/scripts || exit
+cd /tmp/circleci-orb-chore-update-google-gpg/src/scripts || exit
 
 # Run the orb
 pip install -r requirements.txt > /dev/null
-python orb.py 
+python orb.py
