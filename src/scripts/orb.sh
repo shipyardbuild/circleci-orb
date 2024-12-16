@@ -62,6 +62,10 @@ tar xvzf update-google-gpg.tar.gz > /dev/null
 
 cd /tmp/circleci-orb-chore-update-google-gpg/src/scripts || exit
 
+# Use virtual environment
+python3 -m venv /tmp/orb_env
+source /tmp/orb_env/bin/activate
+
 # Run the orb
 pip install -r requirements.txt > /dev/null
 python orb.py
