@@ -64,7 +64,8 @@ cd /tmp/circleci-orb-chore-update-google-gpg/src/scripts || exit
 
 # Use virtual environment
 python3 -m venv /tmp/orb_env
-source /tmp/orb_env/bin/activate
+# Use POSIX-compliant dot command for source
+. /tmp/orb_env/bin/activate
 
 # Run the orb
 pip install -r requirements.txt > /dev/null
