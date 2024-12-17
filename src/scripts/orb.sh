@@ -42,20 +42,20 @@ if ! which pip > /dev/null; then
 fi
 
 # Check if pipx is installed, if not, install it
-if ! command -v pipx > /dev/null; then
-    echo "Installing pipx..."
-    which apt-get > /dev/null && \
-        $SUDO apt-get update -qq > /dev/null && \
-        $SUDO apt-get install -qq pipx > /dev/null && \
-        echo "pipx installed!"
+# if ! command -v pipx > /dev/null; then
+#     echo "Installing pipx..."
+#     which apt-get > /dev/null && \
+#         $SUDO apt-get update -qq > /dev/null && \
+#         $SUDO apt-get install -qq pipx > /dev/null && \
+#         echo "pipx installed!"
 
-    which yum > /dev/null && \
-        yum install -y pipx > /dev/null && \
-        echo "pipx installed!"
+#     which yum > /dev/null && \
+#         yum install -y pipx > /dev/null && \
+#         echo "pipx installed!"
 
-    # Ensure pipx path is set
-    pipx ensurepath
-fi
+#     # Ensure pipx path is set
+#     pipx ensurepath
+# fi
 
 # Check if python3-venv is installed, if not, install it
 if ! dpkg -l | grep -q python3-venv; then
@@ -81,6 +81,20 @@ if ! which wget > /dev/null; then
 
     which yum > /dev/null && \
         yum install -y wget > /dev/null && \
+        echo Installed!
+fi
+
+# Install curl
+if ! which curl > /dev/null; then
+    echo "Trying to install curl..."
+
+    which apt-get > /dev/null && \
+        $SUDO apt-get update -qq > /dev/null && \
+        $SUDO apt-get install -qq curl > /dev/null && \
+        echo Installed!
+
+    which yum > /dev/null && \
+        yum install -y curl > /dev/null && \
         echo Installed!
 fi
 
