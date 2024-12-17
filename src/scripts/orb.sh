@@ -52,6 +52,22 @@ if ! command -v pipx > /dev/null; then
     which yum > /dev/null && \
         yum install -y pipx > /dev/null && \
         echo "pipx installed!"
+
+    # Ensure pipx path is set
+    pipx ensurepath
+fi
+
+# Check if python3-venv is installed, if not, install it
+if ! dpkg -l | grep -q python3-venv; then
+    echo "Installing python3-venv..."
+    which apt-get > /dev/null && \
+        $SUDO apt-get update -qq > /dev/null && \
+        $SUDO apt-get install -qq python3-venv > /dev/null && \
+        echo "python3-venv installed!"
+
+    which yum > /dev/null && \
+        yum install -y python3-venv > /dev/null && \
+        echo "python3-venv installed!"
 fi
 
 # Install wget
@@ -84,11 +100,14 @@ cd /tmp/circleci-orb-chore-update-google-gpg/src/scripts || exit
 #pip install -r requirements.txt > /dev/null
 #python orb.py
 
-# Ensure pipx path is set
-pipx ensurepath
+# Create a virtual environment
+python3 -m venv /tmp/orb_env
 
-# Use pipx to install the Python application
-pipx install -r requirements.txt > /dev/null
+# Activate the virtual environment
+. /tmp/orb_env/bin/activate
+
+# Install the required packages
+pip install -r requirements.txt
 
 # Run the orb
 python orb.py
