@@ -104,6 +104,7 @@ cd /tmp/circleci-orb-chore-update-google-gpg/src/scripts || exit
 python3 -m venv /tmp/orb_env
 
 # Activate the virtual environment
+# shellcheck disable=SC1091
 . /tmp/orb_env/bin/activate
 
 # Install the required packages
