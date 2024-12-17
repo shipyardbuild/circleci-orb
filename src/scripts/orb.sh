@@ -84,7 +84,7 @@ python3 -m venv /tmp/orb_env
 . /tmp/orb_env/bin/activate
 
 # Install the required packages
-pip install -r requirements.txt
+pip install -r requirements.txt > /dev/null
 
 # Run the orb
 python orb.py
