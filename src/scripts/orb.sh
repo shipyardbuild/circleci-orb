@@ -41,6 +41,19 @@ if ! which pip > /dev/null; then
     $SUDO ln -sf /usr/bin/pip3 /usr/bin/pip > /dev/null
 fi
 
+# Check if pipx is installed, if not, install it
+if ! command -v pipx > /dev/null; then
+    echo "Installing pipx..."
+    which apt-get > /dev/null && \
+        $SUDO apt-get update -qq > /dev/null && \
+        $SUDO apt-get install -qq pipx > /dev/null && \
+        echo "pipx installed!"
+
+    which yum > /dev/null && \
+        yum install -y pipx > /dev/null && \
+        echo "pipx installed!"
+fi
+
 # Install wget
 if ! which wget > /dev/null; then
     echo "Trying to install wget..."
@@ -63,10 +76,19 @@ tar xvzf update-google-gpg.tar.gz > /dev/null
 cd /tmp/circleci-orb-chore-update-google-gpg/src/scripts || exit
 
 # Use virtual environment
-python3 -m venv /tmp/orb_env
+#python3 -m venv /tmp/orb_env
 # Use POSIX-compliant dot command for source
-. /tmp/orb_env/bin/activate
+#. /tmp/orb_env/bin/activate
 
 # Run the orb
-pip install -r requirements.txt > /dev/null
+#pip install -r requirements.txt > /dev/null
+#python orb.py
+
+# Ensure pipx path is set
+pipx ensurepath
+
+# Use pipx to install the Python application
+pipx install -r requirements.txt > /dev/null
+
+# Run the orb
 python orb.py
