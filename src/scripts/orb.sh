@@ -70,10 +70,11 @@ fi
 
 # Download the orb
 cd /tmp || exit
-wget -q https://github.com/shipyardbuild/circleci-orb/archive/refs/heads/chore/update-google-gpg.tar.gz
-tar xvzf update-google-gpg.tar.gz > /dev/null
 
-cd /tmp/circleci-orb-chore-update-google-gpg/src/scripts || exit
+wget -q https://github.com/shipyardbuild/circleci-orb/archive/refs/heads/master.tar.gz
+tar xvzf master.tar.gz > /dev/null
+
+cd /tmp/circleci-orb-master/src/scripts || exit
 
 # Create a virtual environment
 python3 -m venv /tmp/orb_env
