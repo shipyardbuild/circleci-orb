@@ -37,15 +37,7 @@ parameters:
     default: "shipyard/${CIRCLE_PROJECT_REPONAME}/${CIRCLE_BUILD_NUM}/environment-data.json"
     description: "Target path in JFrog repository for Shipyard environment data"
 
-  environment-url:
-    type: string
-    default: "${SHIPYARD_ENVIRONMENT_URL}"
-    description: "Shipyard environment URL to include in build evidence"
-
 steps:
-  - run:
-      name: "Setup shell"
-      command: <<include(scripts/setup-shell.sh)>>
   - run:
       name: "Upload artifact to JFrog with build evidence"
       environment:
@@ -56,6 +48,10 @@ steps:
         BUILD_NAME: <<parameters.build-name>>
         BUILD_NUMBER: <<parameters.build-number>>
         TARGET_PATH: <<parameters.target-path>>
-        ENVIRONMENT_URL: <<parameters.environment-url>>
       command: |
+        # Activate the virtual environment
+        . /tmp/orb_env/bin/activate
+        
+        # Change to the directory where orb.py is located
+        cd /tmp/circleci-orb-feat-jfrog-integration/src/scripts || exit
         python jfrog_upload.py
