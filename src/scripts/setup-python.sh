@@ -1,20 +1,18 @@
 #!/usr/bin/env sh
 
+# Set environment variables to prevent interactive prompts
+export DEBIAN_FRONTEND=noninteractive
+export NEEDRESTART_MODE=a
+
 # Check if sudo available
 if [ "$(id -u)" = 0 ]; then export SUDO=""; else # Check if we are root
   export SUDO="sudo";
 fi
 
-# Fix Cert error - https://www.omgubuntu.co.uk/2017/08/fix-google-gpg-key-linux-repository-error
-if ! $SUDO wget -q -O /usr/share/keyrings/google-keyring.gpg https://dl.google.com/linux/linux_signing_key.pub; then
-    echo "Failed to download Google signing key"
-    exit 1
-fi
-echo "deb [signed-by=/usr/share/keyrings/google-keyring.gpg] https://dl.google.com/linux/chrome/deb/ stable main" | $SUDO tee /etc/apt/sources.list.d/google-chrome.list > /dev/null
-
-# Run apt-get update once if needed
+# Run apt-get update once if needed (skip Google Chrome setup as it's not needed for Python)
 if which apt-get > /dev/null; then
-    $SUDO apt-get update -qq > /dev/null
+    echo "Updating package lists..."
+    $SUDO apt-get update -qq > /dev/null 2>&1 || echo "Warning: apt-get update had some issues, continuing..."
 fi
 
 # Install Python
@@ -22,9 +20,9 @@ if ! which python3 --version > /dev/null; then
     echo "Trying to install Python..."
 
     if which apt-get > /dev/null; then
-        $SUDO apt-get install -qq python3 python3-six apt-utils > /dev/null && echo "Python installed!"
+        $SUDO apt-get install -y -qq --no-install-recommends python3 python3-six apt-utils > /dev/null 2>&1 && echo "Python installed!"
     elif which yum > /dev/null; then
-        $SUDO yum install -y python3 python3-six > /dev/null && echo "Python installed!"
+        $SUDO yum install -y python3 python3-six > /dev/null 2>&1 && echo "Python installed!"
     fi
 
     $SUDO ln -sf /usr/bin/python3 /usr/bin/python > /dev/null
@@ -35,9 +33,9 @@ if ! which pip > /dev/null; then
     echo "Trying to install pip..."
 
     if which apt-get > /dev/null; then
-        $SUDO apt-get install -qq python3-pip > /dev/null && echo "pip installed!"
+        $SUDO apt-get install -y -qq --no-install-recommends python3-pip > /dev/null 2>&1 && echo "pip installed!"
     elif which yum > /dev/null; then
-        $SUDO yum install -y python3-pip > /dev/null && echo "pip installed!"
+        $SUDO yum install -y python3-pip > /dev/null 2>&1 && echo "pip installed!"
     fi
 
     $SUDO ln -sf /usr/bin/pip3 /usr/bin/pip > /dev/null
@@ -47,9 +45,9 @@ fi
 if ! python3 -m venv --help > /dev/null 2>&1; then
     echo "Installing python3-venv..."
     if which apt-get > /dev/null; then
-        $SUDO apt-get install -qq python3-venv > /dev/null && echo "python3-venv installed!"
+        $SUDO apt-get install -y -qq --no-install-recommends python3-venv > /dev/null 2>&1 && echo "python3-venv installed!"
     elif which yum > /dev/null; then
-        $SUDO yum install -y python3-venv > /dev/null && echo "python3-venv installed!"
+        $SUDO yum install -y python3-venv > /dev/null 2>&1 && echo "python3-venv installed!"
     fi
 fi
 
@@ -58,9 +56,9 @@ if ! which wget > /dev/null; then
     echo "Trying to install wget..."
 
     if which apt-get > /dev/null; then
-        $SUDO apt-get install -qq wget > /dev/null && echo "wget installed!"
+        $SUDO apt-get install -y -qq --no-install-recommends wget > /dev/null 2>&1 && echo "wget installed!"
     elif which yum > /dev/null; then
-        $SUDO yum install -y wget > /dev/null && echo "wget installed!"
+        $SUDO yum install -y wget > /dev/null 2>&1 && echo "wget installed!"
     fi
 fi
 
