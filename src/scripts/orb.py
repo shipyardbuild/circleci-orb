@@ -18,6 +18,7 @@ from __future__ import print_function
 import os
 import sys
 import time
+import json
 from datetime import datetime
 from datetime import timedelta
 
@@ -191,6 +192,21 @@ def main():
         ))
 
     print(f'Shipyard environment {environment_id} data written to {bash_env_path}!')
+    
+    # Save the complete environment data as JSON for other scripts to use
+    json_data = {
+        "environment_id": environment_id,
+        "environment_data": environment_data,
+        "additional_urls": additional_urls,
+        "commit_hash": commit_hash,
+        "fetched_at": datetime.now().isoformat()
+    }
+    
+    json_file_path = '/tmp/shipyard_environment_data.json'
+    with open(json_file_path, 'w') as json_file:
+        json.dump(json_data, json_file, indent=2, default=str)
+    
+    print(f'Complete environment data saved to {json_file_path}')
 
 
 if __name__ == "__main__":
