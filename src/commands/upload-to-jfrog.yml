@@ -48,9 +48,5 @@ steps:
         BUILD_NAME: <<parameters.build-name>>
         BUILD_NUMBER: <<parameters.build-number>>
         TARGET_PATH: <<parameters.target-path>>
-      command: |
-        # Activate the virtual environment
-        . /tmp/orb_env/bin/activate
-        # Change to the directory where orb.py is located
-        cd /tmp/circleci-orb-feat-jfrog-integration/src/scripts || exit
-        python jfrog_upload.py
+        ENVIRONMENT_URL: <<parameters.environment-url>>
+      command: <<include(scripts/run-jfrog-upload.sh)>>
