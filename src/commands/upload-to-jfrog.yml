@@ -1,0 +1,52 @@
+description: >
+  Upload artifacts to JFrog with build evidence including URLs and build ID
+
+parameters:
+
+  artifactory-url:
+    type: env_var_name
+    default: "ARTIFACTORY_URL"
+    description: "Environment variable containing JFrog Artifactory URL (standard JFrog orb variable)"
+
+  artifactory-user:
+    type: env_var_name
+    default: "ARTIFACTORY_USER"
+    description: "Environment variable containing JFrog username (standard JFrog orb variable)"
+
+  artifactory-apikey:
+    type: env_var_name
+    default: "ARTIFACTORY_APIKEY"
+    description: "Environment variable containing JFrog API key (standard JFrog orb variable)"
+
+  repository:
+    type: string
+    description: "Target repository in JFrog Artifactory"
+
+  build-name:
+    type: string
+    default: "${CIRCLE_PROJECT_REPONAME}"
+    description: "Build name for artifact evidence"
+
+  build-number:
+    type: string
+    default: "${CIRCLE_BUILD_NUM}"
+    description: "Build number for artifact evidence"
+
+  target-path:
+    type: string
+    default: "shipyard/${CIRCLE_PROJECT_REPONAME}/${CIRCLE_BUILD_NUM}/environment-data.json"
+    description: "Target path in JFrog repository for Shipyard environment data"
+
+steps:
+  - run:
+      name: "Upload artifact to JFrog with build evidence"
+      environment:
+        ARTIFACTORY_URL_VAR: <<parameters.artifactory-url>>
+        ARTIFACTORY_USER_VAR: <<parameters.artifactory-user>>
+        ARTIFACTORY_APIKEY_VAR: <<parameters.artifactory-apikey>>
+        ARTIFACTORY_REPOSITORY: <<parameters.repository>>
+        BUILD_NAME: <<parameters.build-name>>
+        BUILD_NUMBER: <<parameters.build-number>>
+        TARGET_PATH: <<parameters.target-path>>
+        ENVIRONMENT_URL: <<parameters.environment-url>>
+      command: <<include(scripts/run-jfrog-upload.sh)>>
