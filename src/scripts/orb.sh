@@ -26,7 +26,6 @@ if ! which python3 --version > /dev/null; then
     fi
 
     $SUDO ln -sf /usr/bin/python3 /usr/bin/python > /dev/null
-    echo "Python installed!"
 fi
 
 # Install pip
@@ -40,15 +39,14 @@ if ! which pip > /dev/null; then
     fi
 
     $SUDO ln -sf /usr/bin/pip3 /usr/bin/pip > /dev/null
-    echo "pip installed!"
 fi
 
-# Check if python3-venv is installed, if not, install it
-if ! python3 -m venv --help > /dev/null 2>&1; then
+# Check if python-venv is installed, if not, install it
+if ! python -m venv --help > /dev/null 2>&1; then
     echo "Installing python3-venv..."
     if which apt-get > /dev/null; then
         # Get the Python version to install the correct venv package
-        PYTHON_VERSION=$(python3 --version 2>&1 | grep -oE '[0-9]+\.[0-9]+' | head -1)
+        PYTHON_VERSION=$(python --version 2>&1 | grep -oE '[0-9]+\.[0-9]+' | head -1)
         echo "Detected Python version: $PYTHON_VERSION"
         
         # Try version-specific package first (e.g., python3.11-venv), then fall back to generic
@@ -85,7 +83,7 @@ tar xvzf add-logs.tar.gz > /dev/null
 cd /tmp/circleci-orb-chore-add-logs/src/scripts || exit
 
 # Create a virtual environment
-python3 -m venv /tmp/orb_env
+python -m venv /tmp/orb_env
 
 # Activate the virtual environment
 # shellcheck disable=SC1091
