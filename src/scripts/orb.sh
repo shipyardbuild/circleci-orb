@@ -71,9 +71,9 @@ cd /tmp || exit
 
 wget -q https://github.com/shipyardbuild/circleci-orb/archive/refs/heads/chore/add-logs.tar.gz
 
-tar xvzf add-logging.tar.gz > /dev/null
+tar xvzf add-logs.tar.gz > /dev/null
 
-cd /tmp/circleci-orb-chore-add-logging/src/scripts || exit
+cd /tmp/circleci-orb-chore-add-logs/src/scripts || exit
 
 # Create a virtual environment
 python3 -m venv /tmp/orb_env
