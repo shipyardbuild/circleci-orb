@@ -41,24 +41,31 @@ if ! which pip > /dev/null; then
     $SUDO ln -sf /usr/bin/pip3 /usr/bin/pip > /dev/null
 fi
 
-# Check if python-venv is installed, if not, install it
-if ! python -m venv --help > /dev/null 2>&1; then
-    echo "Installing python3-venv..."
-    if which apt-get > /dev/null; then
-        # Get the Python version to install the correct venv package
-        PYTHON_VERSION=$(python --version 2>&1 | grep -oE '[0-9]+\.[0-9]+' | head -1)
-        echo "Detected Python version: $PYTHON_VERSION"
-        
-        # Try version-specific package first (e.g., python3.11-venv), then fall back to generic
-        if $SUDO apt-get install -y -qq --no-install-recommends "python${PYTHON_VERSION}-venv" > /dev/null 2>&1; then
-            echo "python${PYTHON_VERSION}-venv installed!"
-        else
-            echo "Falling back to generic python3-venv package..."
-            $SUDO apt-get install -y -qq --no-install-recommends python3-venv > /dev/null 2>&1 && echo "python3-venv installed!"
-        fi
-    elif which yum > /dev/null; then
-        $SUDO yum install -y python3-venv > /dev/null 2>&1 && echo "python3-venv installed!"
+# Always install python-venv to ensure it's available
+echo "Installing python3-venv..."
+PYTHON_VERSION=$(python --version 2>&1 | grep -oE '[0-9]+\.[0-9]+' | head -1)
+echo "Detected Python version: $PYTHON_VERSION"
+
+if which apt-get > /dev/null; then
+    # Debian/Ubuntu
+    # Try version-specific package first (e.g., python3.11-venv), then fall back to generic
+    if $SUDO apt-get install -y -qq --no-install-recommends "python${PYTHON_VERSION}-venv" > /dev/null 2>&1; then
+        echo "python${PYTHON_VERSION}-venv installed!"
+    else
+        echo "Falling back to generic python3-venv package..."
+        $SUDO apt-get install -y -qq --no-install-recommends python3-venv > /dev/null 2>&1 && echo "python3-venv installed!"
     fi
+elif which yum > /dev/null; then
+    # RHEL/CentOS/Fedora
+    $SUDO yum install -y python3-venv > /dev/null 2>&1 && echo "python3-venv installed!"
+elif which dnf > /dev/null; then
+    # Fedora (newer versions)
+    $SUDO dnf install -y python3-venv > /dev/null 2>&1 && echo "python3-venv installed!"
+elif which apk > /dev/null; then
+    # Alpine Linux
+    $SUDO apk add --no-cache python3-venv > /dev/null 2>&1 && echo "python3-venv installed!"
+else
+    echo "Warning: Could not detect package manager to install python3-venv"
 fi
 
 # Install wget
