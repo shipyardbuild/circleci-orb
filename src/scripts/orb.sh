@@ -47,11 +47,20 @@ fi
 if ! python3 -m venv --help > /dev/null 2>&1; then
     echo "Installing python3-venv..."
     if which apt-get > /dev/null; then
-        $SUDO apt-get install -y -qq --no-install-recommends python3-venv > /dev/null 2>&1 && echo "python3-venv installed!"
+        # Get the Python version to install the correct venv package
+        PYTHON_VERSION=$(python3 --version 2>&1 | grep -oE '[0-9]+\.[0-9]+' | head -1)
+        echo "Detected Python version: $PYTHON_VERSION"
+        
+        # Try version-specific package first (e.g., python3.11-venv), then fall back to generic
+        if $SUDO apt-get install -y -qq --no-install-recommends python${PYTHON_VERSION}-venv > /dev/null 2>&1; then
+            echo "python${PYTHON_VERSION}-venv installed!"
+        else
+            echo "Falling back to generic python3-venv package..."
+            $SUDO apt-get install -y -qq --no-install-recommends python3-venv > /dev/null 2>&1 && echo "python3-venv installed!"
+        fi
     elif which yum > /dev/null; then
         $SUDO yum install -y python3-venv > /dev/null 2>&1 && echo "python3-venv installed!"
     fi
-    echo "python3-venv installed!"
 fi
 
 # Install wget
