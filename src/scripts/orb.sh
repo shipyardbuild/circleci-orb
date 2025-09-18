@@ -52,7 +52,7 @@ if ! python3 -m venv --help > /dev/null 2>&1; then
         echo "Detected Python version: $PYTHON_VERSION"
         
         # Try version-specific package first (e.g., python3.11-venv), then fall back to generic
-        if $SUDO apt-get install -y -qq --no-install-recommends python${PYTHON_VERSION}-venv > /dev/null 2>&1; then
+        if $SUDO apt-get install -y -qq --no-install-recommends "python${PYTHON_VERSION}-venv" > /dev/null 2>&1; then
             echo "python${PYTHON_VERSION}-venv installed!"
         else
             echo "Falling back to generic python3-venv package..."
