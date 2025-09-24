@@ -18,15 +18,20 @@ from __future__ import print_function
 import os
 import sys
 import time
-from datetime import datetime
-from datetime import timedelta
+from datetime import datetime, timedelta, timezone
 
 import swagger_client
 from swagger_client.rest import ApiException
 
 
+def log_with_timestamp(msg):
+    """Print a message with UTC timestamp prefix"""
+    timestamp = datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M:%S UTC')
+    print(f"[{timestamp}] {msg}")
+
+
 def exit_with_error(msg):
-    print(msg)
+    log_with_timestamp(msg)
     # Clean up the thread pool before exiting
     if 'client' in globals() and client and hasattr(client, 'pool'):
         client.pool.close()
@@ -78,7 +83,7 @@ def fetch_shipyard_environment():
         if app_name:
             args["name"] = app_name
         response = api_instance.list_environments(**args).to_dict()
-        print(f"Response: {response}")
+        log_with_timestamp(f"Response: {response}")
     except ApiException as e:
         exit_with_error("ERROR: issue while listing environments via API: {}".format(e))
 
@@ -138,14 +143,14 @@ def wait_for_environment():
         if all([environment_data['retired'], auto_restart, not was_restarted]):
             restart_environment(environment_id)
             was_restarted = True
-            print('Restarted Shipyard environment...')
+            log_with_timestamp('Restarted Shipyard environment...')
         elif environment_data['stopped'] and not environment_data['processing']:
             exit_with_error('ERROR: this environment is stopped and no builds are processing')
 
         # Wait 15 seconds
         seconds_waited = int((now - start).total_seconds())
         wait_string = ' ({}s elapsed)'.format(seconds_waited) if seconds_waited else ''
-        print("Waiting for Shipyard environment...{}".format(wait_string))
+        log_with_timestamp("Waiting for Shipyard environment...{}".format(wait_string))
         time.sleep(15)
 
         # Check on the environment again
@@ -175,7 +180,7 @@ def main():
             pr_project = projects[0] if projects else {}
         commit_hash = pr_project.get("commit_hash")
     except Exception:
-        print('WARNING: unable to retrieve commit hash')
+        log_with_timestamp('WARNING: unable to retrieve commit hash')
         commit_hash = None
 
 
@@ -195,7 +200,7 @@ def main():
         + shipyard_additional_urls_vars
         ))
 
-    print(f'Shipyard environment {environment_id} data written to {bash_env_path}!')
+    log_with_timestamp(f'Shipyard environment {environment_id} data written to {bash_env_path}!')
 
 
 if __name__ == "__main__":
