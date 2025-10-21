@@ -19,9 +19,32 @@ import os
 import sys
 import time
 from datetime import datetime, timedelta, timezone
+from functools import wraps
 
 import swagger_client
 from swagger_client.rest import ApiException
+
+
+def retry_on_failure(max_retries=3, delay=5):
+    """Decorator to retry a function on failure with exponential backoff"""
+    def decorator(func):
+        @wraps(func)
+        def wrapper(*args, **kwargs):
+            last_exception = None
+            for attempt in range(max_retries):
+                try:
+                    return func(*args, **kwargs)
+                except Exception as e:
+                    last_exception = e
+                    if attempt < max_retries - 1:  # Don't log on the last attempt
+                        wait_time = delay * (2 ** attempt)  # Exponential backoff
+                        log_with_timestamp(f"Attempt {attempt + 1} failed: {e}. Retrying in {wait_time} seconds...")
+                        time.sleep(wait_time)
+                    else:
+                        log_with_timestamp(f"All {max_retries} attempts failed. Last error: {e}")
+            raise last_exception
+        return wrapper
+    return decorator
 
 
 def log_with_timestamp(msg):
@@ -70,6 +93,7 @@ client = swagger_client.ApiClient(configuration)
 api_instance = swagger_client.EnvironmentApi(client)
 
 
+@retry_on_failure(max_retries=3, delay=5)
 def fetch_shipyard_environment():
     """Fetch the Shipyard environment for this CircleCI job"""
 
@@ -85,7 +109,8 @@ def fetch_shipyard_environment():
         response = api_instance.list_environments(**args).to_dict()
         log_with_timestamp(f"Response: {response}")
     except ApiException as e:
-        exit_with_error("ERROR: issue while listing environments via API: {}".format(e))
+        # Re-raise the exception to be handled by the retry decorator
+        raise Exception("ERROR: issue while listing environments via API: {}".format(e))
 
     # Exit if any errors
     errors = response.get('errors')
@@ -127,7 +152,10 @@ def wait_for_environment():
     was_restarted = False
 
     # Check the environment
-    environment_id, environment_data = fetch_shipyard_environment()
+    try:
+        environment_id, environment_data = fetch_shipyard_environment()
+    except Exception as e:
+        exit_with_error(str(e))
 
     start = datetime.now()
     timeout_end = datetime.now() + timedelta(minutes=timeout_minutes)
@@ -154,7 +182,10 @@ def wait_for_environment():
         time.sleep(15)
 
         # Check on the environment again
-        environment_id, environment_data = fetch_shipyard_environment()
+        try:
+            environment_id, environment_data = fetch_shipyard_environment()
+        except Exception as e:
+            exit_with_error(str(e))
 
     return environment_id, environment_data
 
