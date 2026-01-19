@@ -18,22 +18,54 @@ from __future__ import print_function
 import os
 import sys
 import time
-from datetime import datetime
-from datetime import timedelta
+from datetime import datetime, timedelta, timezone
+from functools import wraps
 
 import swagger_client
 from swagger_client.rest import ApiException
 
 
-def exit(msg):
-    print(msg)
+def retry_on_failure(max_retries=3, delay=5):
+    """Decorator to retry a function on failure with exponential backoff"""
+    def decorator(func):
+        @wraps(func)
+        def wrapper(*args, **kwargs):
+            last_exception = None
+            for attempt in range(max_retries):
+                try:
+                    return func(*args, **kwargs)
+                except Exception as e:
+                    last_exception = e
+                    if attempt < max_retries - 1:  # Don't log on the last attempt
+                        wait_time = delay * (2 ** attempt)  # Exponential backoff
+                        log_with_timestamp(f"Attempt {attempt + 1} failed: {e}. Retrying in {wait_time} seconds...")
+                        time.sleep(wait_time)
+                    else:
+                        log_with_timestamp(f"All {max_retries} attempts failed. Last error: {e}")
+            raise last_exception
+        return wrapper
+    return decorator
+
+
+def log_with_timestamp(msg):
+    """Print a message with UTC timestamp prefix"""
+    timestamp = datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M:%S UTC')
+    print(f"[{timestamp}] {msg}")
+
+
+def exit_with_error(msg):
+    log_with_timestamp(msg)
+    # Clean up the thread pool before exiting
+    if 'client' in globals() and client and hasattr(client, 'pool'):
+        client.pool.close()
+        client.pool.join()
     sys.exit(1)
 
 
 # Make sure there's a bash env file in the environment
 bash_env_path = os.environ.get('BASH_ENV')
 if not bash_env_path:
-    exit('ERROR: missing BASH_ENV environment variable')
+    exit_with_error('ERROR: missing BASH_ENV environment variable')
 
 # Constants
 repo_owner = os.environ.get("CIRCLE_PROJECT_USERNAME")
@@ -43,14 +75,14 @@ branch = os.environ.get("CIRCLE_BRANCH")
 # Get auth token
 api_token = os.environ.get('SHIPYARD_API_TOKEN')
 if not api_token:
-    exit('No SHIPYARD_API_TOKEN provided, exiting.')
+    exit_with_error('No SHIPYARD_API_TOKEN provided, exiting.')
 
 # Get the timeout
 timeout_minutes = os.environ.get('SHIPYARD_TIMEOUT')
 try:
     timeout_minutes = int(timeout_minutes)
 except Exception:
-    exit('ERROR: the SHIPYARD_TIMEOUT provided ("{}") is not an integer'.format(timeout_minutes))
+    exit_with_error('ERROR: the SHIPYARD_TIMEOUT provided ("{}") is not an integer'.format(timeout_minutes))
 
 app_name = os.environ.get('SHIPYARD_APP_NAME')
 
@@ -61,6 +93,7 @@ client = swagger_client.ApiClient(configuration)
 api_instance = swagger_client.EnvironmentApi(client)
 
 
+@retry_on_failure(max_retries=3, delay=5)
 def fetch_shipyard_environment():
     """Fetch the Shipyard environment for this CircleCI job"""
 
@@ -74,29 +107,31 @@ def fetch_shipyard_environment():
         if app_name:
             args["name"] = app_name
         response = api_instance.list_environments(**args).to_dict()
+        log_with_timestamp(f"Response: {response}")
     except ApiException as e:
-        exit("ERROR: issue while listing environments via API: {}".format(e))
+        # Re-raise the exception to be handled by the retry decorator
+        raise Exception("ERROR: issue while listing environments via API: {}".format(e))
 
     # Exit if any errors
     errors = response.get('errors')
     if errors:
-        exit('ERROR: {}'.format(errors[0]["title"]))
+        exit_with_error('ERROR: {}'.format(errors[0]["title"]))
 
     # Verify an environment was found
     if not len(response['data']):
-        exit('ERROR: no matching Shipyard environment found')
+        exit_with_error('ERROR: no matching Shipyard environment found')
 
     # Verify the data is where we expect
     try:
         environment_id = response['data'][0]['id']
         environment_data = response['data'][0]['attributes']
     except Exception:
-        exit('ERROR: invalid response data structure')
+        exit_with_error('ERROR: invalid response data structure')
 
     # Verify all the needed fields are available
     for param in ('bypass_token', 'url', 'ready', 'stopped', 'retired'):
         if param not in environment_data:
-            exit('ERROR: no {} found!'.format(param))
+            exit_with_error('ERROR: no {} found!'.format(param))
 
     return environment_id, environment_data
 
@@ -107,7 +142,7 @@ def restart_environment(environment_id):
     try:
         api_instance.restart_environment(environment_id)
     except ApiException as e:
-        exit("ERROR: issue while restart the environment: {}".format(e))
+        exit_with_error("ERROR: issue while restart the environment: {}".format(e))
 
 
 def wait_for_environment():
@@ -117,7 +152,10 @@ def wait_for_environment():
     was_restarted = False
 
     # Check the environment
-    environment_id, environment_data = fetch_shipyard_environment()
+    try:
+        environment_id, environment_data = fetch_shipyard_environment()
+    except Exception as e:
+        exit_with_error(str(e))
 
     start = datetime.now()
     timeout_end = datetime.now() + timedelta(minutes=timeout_minutes)
@@ -127,24 +165,27 @@ def wait_for_environment():
         now = datetime.now()
         # Check if the timeout has elapsed
         if datetime.now() > timeout_end:
-            exit('{} minute timeout elapsed, exiting!'.format(timeout_minutes))
+            exit_with_error('{} minute timeout elapsed, exiting!'.format(timeout_minutes))
 
         # Auto-restart the environment once if indicated
         if all([environment_data['retired'], auto_restart, not was_restarted]):
             restart_environment(environment_id)
             was_restarted = True
-            print('Restarted Shipyard environment...')
+            log_with_timestamp('Restarted Shipyard environment...')
         elif environment_data['stopped'] and not environment_data['processing']:
-            exit('ERROR: this environment is stopped and no builds are processing')
+            exit_with_error('ERROR: this environment is stopped and no builds are processing')
 
         # Wait 15 seconds
         seconds_waited = int((now - start).total_seconds())
         wait_string = ' ({}s elapsed)'.format(seconds_waited) if seconds_waited else ''
-        print("Waiting for Shipyard environment...{}".format(wait_string))
+        log_with_timestamp("Waiting for Shipyard environment...{}".format(wait_string))
         time.sleep(15)
 
         # Check on the environment again
-        environment_id, environment_data = fetch_shipyard_environment()
+        try:
+            environment_id, environment_data = fetch_shipyard_environment()
+        except Exception as e:
+            exit_with_error(str(e))
 
     return environment_id, environment_data
 
@@ -170,7 +211,7 @@ def main():
             pr_project = projects[0] if projects else {}
         commit_hash = pr_project.get("commit_hash")
     except Exception:
-        print('WARNING: unable to retrieve commit hash')
+        log_with_timestamp('WARNING: unable to retrieve commit hash')
         commit_hash = None
 
 
@@ -190,8 +231,14 @@ def main():
         + shipyard_additional_urls_vars
         ))
 
-    print(f'Shipyard environment {environment_id} data written to {bash_env_path}!')
+    log_with_timestamp(f'Shipyard environment {environment_id} data written to {bash_env_path}!')
 
 
 if __name__ == "__main__":
-    main()
+    try:
+        main()
+    finally:
+        # Always clean up the thread pool to prevent hanging
+        if 'client' in globals() and client and hasattr(client, 'pool'):
+            client.pool.close()
+            client.pool.join()

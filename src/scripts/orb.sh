@@ -1,26 +1,29 @@
 #!/usr/bin/env sh
 
+# Set environment variables to prevent interactive prompts
+export DEBIAN_FRONTEND=noninteractive
+export NEEDRESTART_MODE=a
+
 # Check if sudo available
 if [ "$(id -u)" = 0 ]; then export SUDO=""; else # Check if we are root
   export SUDO="sudo";
 fi
 
-# Fix Cert error - https://www.omgubuntu.co.uk/2017/08/fix-google-gpg-key-linux-repository-error
-$SUDO wget -q -O /usr/share/keyrings/google-keyring.gpg https://dl.google.com/linux/linux_signing_key.pub
-echo "deb [signed-by=/usr/share/keyrings/google-keyring.gpg] https://dl.google.com/linux/chrome/deb/ stable main" | $SUDO tee /etc/apt/sources.list.d/google-chrome.list > /dev/null
+# Run apt-get update once if needed (skip Google Chrome setup as it's not needed for Python)
+if which apt-get > /dev/null; then
+    echo "Updating package lists..."
+    $SUDO apt-get update -qq > /dev/null 2>&1 || echo "Warning: apt-get update had some issues, continuing..."
+fi
 
 # Install Python
 if ! which python3 --version > /dev/null; then
     echo "Trying to install Python..."
 
-    which apt-get > /dev/null && \
-        $SUDO apt-get update -qq > /dev/null && \
-        $SUDO apt-get install -qq python3 python3-six apt-utils > /dev/null && \
-        echo Installed!
-
-    which yum > /dev/null && \
-        yum install -y python3 python3-six > /dev/null && \
-        echo Installed!
+    if which apt-get > /dev/null; then
+        $SUDO apt-get install -y -qq --no-install-recommends python3 python3-six apt-utils > /dev/null 2>&1 && echo "Python installed!"
+    elif which yum > /dev/null; then
+        $SUDO yum install -y python3 python3-six > /dev/null 2>&1 && echo "Python installed!"
+    fi
 
     $SUDO ln -sf /usr/bin/python3 /usr/bin/python > /dev/null
 fi
@@ -29,55 +32,65 @@ fi
 if ! which pip > /dev/null; then
     echo "Trying to install pip..."
 
-    which apt-get > /dev/null && \
-        $SUDO apt-get update -qq > /dev/null && \
-        $SUDO apt-get install -qq python3-pip > /dev/null && \
-        echo Installed!
-
-    which yum > /dev/null && \
-        yum install -y python3-pip > /dev/null && \
-        echo Installed!
+    if which apt-get > /dev/null; then
+        $SUDO apt-get install -y -qq --no-install-recommends python3-pip > /dev/null 2>&1 && echo "pip installed!"
+    elif which yum > /dev/null; then
+        $SUDO yum install -y python3-pip > /dev/null 2>&1 && echo "pip installed!"
+    fi
 
     $SUDO ln -sf /usr/bin/pip3 /usr/bin/pip > /dev/null
 fi
 
-# Check if python3-venv is installed, if not, install it
-if ! dpkg -l | grep -q python3-venv; then
-    echo "Installing python3-venv..."
-    which apt-get > /dev/null && \
-        $SUDO apt-get update -qq > /dev/null && \
-        $SUDO apt-get install -qq python3-venv > /dev/null && \
-        echo "python3-venv installed!"
+# Always install python-venv to ensure it's available
+echo "Installing python3-venv..."
+PYTHON_VERSION=$(python --version 2>&1 | grep -oE '[0-9]+\.[0-9]+' | head -1)
+echo "Detected Python version: $PYTHON_VERSION"
 
-    which yum > /dev/null && \
-        yum install -y python3-venv > /dev/null && \
-        echo "python3-venv installed!"
+if which apt-get > /dev/null; then
+    # Debian/Ubuntu
+    # Try version-specific package first (e.g., python3.11-venv), then fall back to generic
+    if $SUDO apt-get install -y -qq --no-install-recommends "python${PYTHON_VERSION}-venv" > /dev/null 2>&1; then
+        echo "python${PYTHON_VERSION}-venv installed!"
+    else
+        echo "Falling back to generic python3-venv package..."
+        $SUDO apt-get install -y -qq --no-install-recommends python3-venv > /dev/null 2>&1 && echo "python3-venv installed!"
+    fi
+elif which yum > /dev/null; then
+    # RHEL/CentOS/Fedora
+    $SUDO yum install -y python3-venv > /dev/null 2>&1 && echo "python3-venv installed!"
+elif which dnf > /dev/null; then
+    # Fedora (newer versions)
+    $SUDO dnf install -y python3-venv > /dev/null 2>&1 && echo "python3-venv installed!"
+elif which apk > /dev/null; then
+    # Alpine Linux
+    $SUDO apk add --no-cache python3-venv > /dev/null 2>&1 && echo "python3-venv installed!"
+else
+    echo "Warning: Could not detect package manager to install python3-venv"
 fi
 
 # Install wget
 if ! which wget > /dev/null; then
     echo "Trying to install wget..."
 
-    which apt-get > /dev/null && \
-        $SUDO apt-get update -qq > /dev/null && \
-        $SUDO apt-get install -qq wget > /dev/null && \
-        echo Installed!
-
-    which yum > /dev/null && \
-        yum install -y wget > /dev/null && \
-        echo Installed!
+    if which apt-get > /dev/null; then
+        $SUDO apt-get install -y -qq --no-install-recommends wget > /dev/null 2>&1 && echo "wget installed!"
+    elif which yum > /dev/null; then
+        $SUDO yum install -y wget > /dev/null 2>&1 && echo "wget installed!"
+    fi
+    echo "wget installed!"
 fi
 
 # Download the orb
 cd /tmp || exit
 
-wget -q https://github.com/shipyardbuild/circleci-orb/archive/refs/heads/master.tar.gz
-tar xvzf master.tar.gz > /dev/null
+wget -q https://github.com/shipyardbuild/circleci-orb/archive/refs/heads/chore/add-logs.tar.gz
 
-cd /tmp/circleci-orb-master/src/scripts || exit
+tar xvzf add-logs.tar.gz > /dev/null
+
+cd /tmp/circleci-orb-chore-add-logs/src/scripts || exit
 
 # Create a virtual environment
-python3 -m venv /tmp/orb_env
+python -m venv /tmp/orb_env
 
 # Activate the virtual environment
 # shellcheck disable=SC1091

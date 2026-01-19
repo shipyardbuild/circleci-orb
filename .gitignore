@@ -2,3 +2,5 @@
 orb.yml
 .DS_Store
 **/__pycache__/
+processed.yml
+packed-orb.yml
