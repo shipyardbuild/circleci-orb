@@ -80,14 +80,17 @@ if ! which wget > /dev/null; then
     echo "wget installed!"
 fi
 
-# Download the orb
+# Download the orb's scripts from this release's tag, so each orb version runs
+# exactly the code it was released with. Bump ORB_VERSION with every release
+# (it must match the vX.Y.Z tag that publishes the orb).
+ORB_VERSION="3.6.6"
 cd /tmp || exit
 
-wget -q https://github.com/shipyardbuild/circleci-orb/archive/refs/heads/chore/add-logs.tar.gz
+wget -q -O "circleci-orb-${ORB_VERSION}.tar.gz" "https://github.com/shipyardbuild/circleci-orb/archive/refs/tags/v${ORB_VERSION}.tar.gz" || { echo "ERROR: could not download the orb scripts for v${ORB_VERSION}"; exit 1; }
 
-tar xvzf add-logs.tar.gz > /dev/null
+tar xzf "circleci-orb-${ORB_VERSION}.tar.gz" > /dev/null
 
-cd /tmp/circleci-orb-chore-add-logs/src/scripts || exit
+cd "/tmp/circleci-orb-${ORB_VERSION}/src/scripts" || exit
 
 # Create a virtual environment
 python -m venv /tmp/orb_env
