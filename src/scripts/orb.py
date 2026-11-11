@@ -15,7 +15,9 @@ then put its data in the environment.
 """
 from __future__ import print_function
 
+import json
 import os
+import re
 import sys
 import time
 from datetime import datetime, timedelta, timezone
@@ -190,6 +192,32 @@ def wait_for_environment():
     return environment_id, environment_data
 
 
+def domain_env_name(service_name):
+    """SHIPYARD_DOMAIN_<NAME> for a service: uppercased, non-alphanumerics as _."""
+    return 'SHIPYARD_DOMAIN_' + re.sub(r'[^A-Z0-9]', '_', service_name.upper())
+
+
+def fetch_additional_urls(environment_id):
+    """Per-service URLs of the environment, as {service_name: url}.
+
+    The list endpoint leaves additional_urls out, so read them from the
+    single-environment endpoint. Read the raw JSON: the generated client's
+    models drop fields they don't know about. On failure, log and return {}
+    so the main URL and token are still exported.
+    """
+    try:
+        response = api_instance.get_environment(environment_id, _preload_content=False)
+        body = json.loads(response.data)
+        urls = body['data']['attributes'].get('additional_urls') or {}
+        if not isinstance(urls, dict):
+            raise ValueError('additional_urls is not an object')
+        return urls
+    except Exception as e:
+        reason = (str(e).splitlines() or [type(e).__name__])[0]
+        log_with_timestamp('WARNING: could not read the environment\'s additional URLs: {}'.format(reason))
+        return {}
+
+
 def main():
     """
     Wait for the Shipyard environment to be ready,
@@ -215,8 +243,12 @@ def main():
         commit_hash = None
 
 
-    additional_urls = environment_data.get("additional_urls", {})
-    shipyard_additional_urls_vars = [f'export SHIPYARD_DOMAIN_{k.upper().replace("-","_")}={v}' for (k,v) in additional_urls.items()]
+    additional_urls = fetch_additional_urls(environment_id)
+    shipyard_additional_urls_vars = [
+        f'export {domain_env_name(k)}={v}' for (k, v) in sorted(additional_urls.items())
+    ]
+    if additional_urls:
+        log_with_timestamp('Additional URLs: ' + ', '.join(domain_env_name(k) for k in sorted(additional_urls)))
 
     # Write the data to the job's environment
     with open(bash_env_path, 'a') as bash_env:
